@@ -1,226 +1,154 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <title>CS2 Ecosystem</title>
+    
+    <title>CS2 Premium</title>
+    
+    <script>
+        // Настраиваем киберспортивные цвета
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0F1115',
+                        panel: '#1A1D24',
+                        accent: '#00FFA3', /* Неоновый зеленый */
+                        primary: '#007BFF', /* Синий */
+                        muted: '#8B92A5',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --bg-dark: #0F1115;
-            --bg-card: #1A1D24;
-            --neon-green: #00FFA3;
-            --neon-blue: #007BFF;
-            --text-main: #FFFFFF;
-            --text-muted: #8B92A5;
-            --border: rgba(255, 255, 255, 0.05);
-        }
-
-        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        
-        body { 
-            background-color: var(--bg-dark); color: var(--text-main); 
-            margin: 0; padding: 0; padding-bottom: 80px; 
-            background-image: radial-gradient(circle at 50% 0%, rgba(0, 123, 255, 0.1) 0%, transparent 50%);
-        }
-
-        /* TOP BAR */
-        .top-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px; background: rgba(15, 17, 21, 0.8);
-            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;
-            border-bottom: 1px solid var(--border);
-        }
-        .icon-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 8px 12px; border-radius: 8px; font-weight: bold; }
-        .economy { display: flex; gap: 15px; font-size: 14px; font-weight: 600; }
-        .eco-item { display: flex; align-items: center; gap: 5px; }
-        .eco-energy { color: var(--neon-blue); }
-        .eco-coins { color: var(--neon-green); }
-
-        /* TABS CONTAINER */
-        .tab-content { display: none; padding: 20px; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        body { background-color: #0F1115; color: white; -webkit-tap-highlight-color: transparent; }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* ARENA (TAB 1) */
-        .arena-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; color: var(--text-muted); }
-        .arena-circle {
-            width: 250px; height: 250px; border-radius: 50%; margin: 0 auto 30px;
-            border: 4px solid var(--bg-card); position: relative;
-            box-shadow: 0 0 30px rgba(0, 123, 255, 0.15);
-            display: flex; align-items: center; justify-content: center;
-            background: conic-gradient(from 0deg, var(--neon-blue) 0% 20%, #2A2D3A 20% 60%, var(--neon-green) 60% 100%);
-            transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .arena-circle::after { content: ''; position: absolute; width: 220px; height: 220px; background: var(--bg-dark); border-radius: 50%; }
-        .arena-center-text { position: absolute; z-index: 2; text-align: center; }
-        .arena-center-text h2 { margin: 0; font-size: 24px; color: var(--text-main); }
-        .arena-center-text p { margin: 5px 0 0; font-size: 12px; color: var(--neon-blue); text-transform: uppercase; letter-spacing: 2px; }
-
-        /* SIGNALS (TAB 2) */
-        .signal-card { background: var(--bg-card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border-left: 4px solid var(--neon-blue); }
-        .signal-card.myth { border-left: 4px solid #FF3366; }
-        .card-tag { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; margin-bottom: 8px; }
-        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 8px; }
-        .card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
-        .myth-buttons { display: flex; gap: 10px; margin-top: 15px; }
-
-        /* BUTTONS */
-        .btn-primary { background: var(--neon-green); color: #000; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.2s; }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* BOTTOM NAV */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg-card);
-            display: flex; justify-content: space-around; padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
-            border-top: 1px solid var(--border); z-index: 100;
+        /* Светящаяся круглая арена */
+        .arena-circle {
+            background: conic-gradient(from 0deg, #007BFF 0% 20%, #2A2D3A 20% 60%, #00FFA3 60% 100%);
+            box-shadow: 0 0 40px rgba(0, 123, 255, 0.2);
+            transition: transform 3s cubic-bezier(0.1, 0.8, 0.2, 1);
         }
-        .nav-item { color: var(--text-muted); text-align: center; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.3s; width: 25%; }
-        .nav-item.active { color: var(--text-main); }
-        .nav-item.active .nav-icon { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 123, 255, 0.5); }
-        .nav-icon { display: block; font-size: 20px; margin-bottom: 4px; transition: 0.3s; }
     </style>
 </head>
-<body>
+<body class="pb-24">
 
-    <div class="top-bar">
-        <div class="icon-btn">i</div>
-        <div class="economy">
-            <div class="eco-item eco-energy">⚡ 120</div>
-            <div class="eco-item eco-coins">🪙 1,450</div>
+    <header class="sticky top-0 z-50 bg-dark/90 backdrop-blur-md border-b border-white/10 px-4 py-3 flex justify-between items-center">
+        <button class="w-10 h-10 rounded-xl bg-panel border border-white/10 text-muted flex items-center justify-center">
+            <i class="fa-solid fa-info"></i>
+        </button>
+        
+        <div class="flex gap-4 font-bold text-sm">
+            <div class="flex items-center gap-1.5"><span class="text-primary text-lg">⚡</span> 120</div>
+            <div class="flex items-center gap-1.5"><span class="text-accent text-lg">🪙</span> 1,450</div>
         </div>
-        <div class="icon-btn">💬</div>
-    </div>
 
-    <div id="tab-arena" class="tab-content active">
-        <div class="arena-header">
-            <span>🔥 Entries: 4,202</span>
-            <span style="color: var(--neon-green)">Live: 00:24</span>
+        <button class="w-10 h-10 rounded-xl bg-panel border border-white/10 text-muted flex items-center justify-center">
+            <i class="fa-solid fa-comment-dots"></i>
+        </button>
+    </header>
+
+    <div id="tab-arena" class="tab-content active px-4 pt-6">
+        <div class="flex justify-between items-center text-xs font-bold text-muted uppercase tracking-wider mb-8">
+            <span>🔥 Билетов: 4,202</span>
+            <span class="text-accent">Старт: 00:24</span>
         </div>
         
-        <div class="arena-circle" id="arena-wheel">
-            <div class="arena-center-text">
-                <h2>ENGAGE</h2>
-                <p>To Win</p>
+        <div class="relative w-64 h-64 mx-auto mb-10">
+            <div id="wheel" class="arena-circle w-full h-full rounded-full flex items-center justify-center">
+                <div class="w-56 h-56 bg-dark rounded-full flex flex-col items-center justify-center z-10">
+                    <h2 class="text-3xl font-black tracking-wider">АРЕНА</h2>
+                    <p class="text-primary text-xs font-bold tracking-widest mt-1 uppercase">Жми старт</p>
+                </div>
             </div>
         </div>
 
-        <button class="btn-primary" onclick="spinArena()">Join Round (10 ⚡)</button>
+        <button onclick="playArena()" class="w-full bg-accent text-black font-black py-4 rounded-2xl uppercase tracking-widest text-sm shadow-[0_0_20px_rgba(0,255,163,0.3)] active:scale-95 transition-transform">
+            Войти в раунд (10 ⚡)
+        </button>
     </div>
 
-    <div id="tab-signals" class="tab-content">
-        <div class="signal-card myth" id="myth-card">
-            <div class="card-tag">Interactive: Myth or Fact</div>
-            <div class="card-title">Bomb Defuse Audio Cue</div>
-            <div class="card-desc">"The defuse sound plays globally exactly 10 seconds before detonation."</div>
-            <div class="myth-buttons">
-                <button class="btn-outline" onclick="resolveMyth(false)">❌ MYTH</button>
-                <button class="btn-outline" onclick="resolveMyth(true)">✅ FACT</button>
+    <div id="tab-signals" class="tab-content px-4 pt-6">
+        <div class="bg-panel rounded-2xl p-5 border-l-4 border-primary mb-4 relative overflow-hidden">
+            <div class="text-[10px] text-muted font-bold uppercase tracking-wider mb-2">Интерактив: Миф или Факт</div>
+            <h3 class="font-bold text-lg mb-2">Звук разминирования</h3>
+            <p class="text-sm text-gray-400 mb-4">"Звук дефуза бомбы слышен на всей карте ровно за 10 секунд до взрыва."</p>
+            <div class="flex gap-3">
+                <button class="flex-1 py-2 border border-white/10 rounded-xl text-sm font-bold text-gray-300">❌ Миф</button>
+                <button class="flex-1 py-2 border border-white/10 rounded-xl text-sm font-bold text-gray-300 bg-white/5">✅ Факт</button>
             </div>
         </div>
-
-        <div class="signal-card">
-            <div class="card-tag">Meta Shift</div>
-            <div class="card-title">M4A4 Pick Rate Dropping 📉</div>
-            <div class="card-desc">Pro usage down 14% at IEM Katowice. Recommendation: Hold M4A1-S skins, market liquidity dropping for A4.</div>
+        
+        <div class="bg-panel rounded-2xl p-5 border-l-4 border-accent">
+            <div class="text-[10px] text-muted font-bold uppercase tracking-wider mb-2">Аналитика рынка</div>
+            <h3 class="font-bold text-lg mb-2">M4A4 падает в цене 📉</h3>
+            <p class="text-sm text-gray-400">Частота покупок на турнирах упала на 14%. Совет: держите скины на M4A1-S.</p>
         </div>
     </div>
 
-    <div id="tab-ai" class="tab-content">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div style="font-size: 40px; margin-bottom: 10px;">🧠</div>
-            <h3 style="margin: 0">System Initialized</h3>
-            <p style="color: var(--text-muted); font-size: 13px;">Select preferred language for tactical and market analysis.</p>
-        </div>
-        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <button class="btn-outline" onclick="setLang('English')">English</button>
-            <button class="btn-outline" onclick="setLang('Русский')">Русский</button>
-        </div>
-        <div id="ai-chat" class="signal-card" style="display: none; border-left-color: var(--neon-green);">
-            <div class="card-title">AI: Ready</div>
-            <div class="card-desc" id="ai-response">I am calibrated. How can I assist you today? I can analyze market trends or build custom loadouts.</div>
-        </div>
-    </div>
-
-    <div id="tab-profile" class="tab-content">
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
-            <div style="width: 70px; height: 70px; background: var(--bg-card); border-radius: 16px; border: 2px solid var(--neon-blue); display: flex; align-items: center; justify-content: center; font-size: 30px;">🕵️</div>
-            <div>
-                <h3 style="margin: 0;">Ghost_CS</h3>
-                <p style="margin: 5px 0 0; color: var(--text-muted); font-size: 13px;">Engagement Score: <span style="color: var(--neon-green)">940</span></p>
-            </div>
-        </div>
-
-        <div class="signal-card">
-            <div class="card-tag">Referral Network</div>
-            <div class="card-title">Expand the Squad</div>
-            <div class="card-desc">Invite real players. Increase your Engagement Score. Passive energy earned: +40/day.</div>
-            <button class="btn-outline" style="margin-top: 15px; border-color: var(--neon-blue); color: var(--neon-blue);">Copy Secure Invite Link</button>
-        </div>
-    </div>
-
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('arena', this)">
-            <span class="nav-icon">🎯</span> Games
-        </div>
-        <div class="nav-item" onclick="switchTab('signals', this)">
-            <span class="nav-icon">📊</span> Signals
-        </div>
-        <div class="nav-item" onclick="switchTab('ai', this)">
-            <span class="nav-icon">🧠</span> Assistant
-        </div>
-        <div class="nav-item" onclick="switchTab('profile', this)">
-            <span class="nav-icon">👤</span> Profile
-        </div>
-    </div>
+    <nav class="fixed bottom-0 w-full bg-panel border-t border-white/10 px-2 py-2 flex justify-between z-50 pb-safe">
+        <button onclick="switchTab('arena')" id="btn-arena" class="nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-primary">
+            <i class="fa-solid fa-crosshairs text-xl drop-shadow-[0_0_8px_rgba(0,123,255,0.5)]"></i>
+            <span class="text-[10px] font-bold uppercase">Арена</span>
+        </button>
+        <button onclick="switchTab('signals')" id="btn-signals" class="nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-muted hover:text-white/70">
+            <i class="fa-solid fa-chart-simple text-xl"></i>
+            <span class="text-[10px] font-bold uppercase">Сигналы</span>
+        </button>
+        <button class="nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-muted hover:text-white/70">
+            <i class="fa-solid fa-robot text-xl"></i>
+            <span class="text-[10px] font-bold uppercase">AI Помощник</span>
+        </button>
+        <button class="nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-muted hover:text-white/70">
+            <i class="fa-regular fa-user text-xl"></i>
+            <span class="text-[10px] font-bold uppercase">Профиль</span>
+        </button>
+    </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Навигация
-        function switchTab(tabId, element) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            element.classList.add('active');
+        // Простое переключение вкладок
+        function switchTab(tabName) {
+            // Скрываем все вкладки
+            document.getElementById('tab-arena').classList.remove('active');
+            document.getElementById('tab-signals').classList.remove('active');
+            
+            // Красим все кнопки в серый
+            document.getElementById('btn-arena').className = "nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-muted";
+            document.getElementById('btn-signals').className = "nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-muted";
+            
+            // Убираем свечение с иконок
+            document.querySelector('#btn-arena i').classList.remove('drop-shadow-[0_0_8px_rgba(0,123,255,0.5)]');
+            document.querySelector('#btn-signals i').classList.remove('drop-shadow-[0_0_8px_rgba(0,123,255,0.5)]');
+
+            // Включаем нужную вкладку
+            document.getElementById('tab-' + tabName).classList.add('active');
+            
+            // Делаем нужную кнопку синей и со свечением
+            const activeBtn = document.getElementById('btn-' + tabName);
+            activeBtn.className = "nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-primary";
+            activeBtn.querySelector('i').classList.add('drop-shadow-[0_0_8px_rgba(0,123,255,0.5)]');
+
             if(tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
         }
 
-        // Анимация Арены (Имитация рулетки)
-        function spinArena() {
+        // Анимация рулетки
+        function playArena() {
             if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-            const wheel = document.getElementById('arena-wheel');
-            const randomRotation = Math.floor(Math.random() * 360) + 1440; // Крутим минимум 4 раза
-            wheel.style.transform = `rotate(${randomRotation}deg)`;
-            
-            setTimeout(() => {
-                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                tg.showAlert('Victory Secured! Engagement Score +50.');
-            }, 3000);
-        }
-
-        // Логика Миф/Факт
-        function resolveMyth(isFact) {
-            const card = document.getElementById('myth-card');
-            if(isFact) {
-                card.style.borderLeftColor = 'var(--neon-green)';
-                card.innerHTML = `<div class="card-tag" style="color: var(--neon-green)">CORRECT! +10 Energy</div><div class="card-title">Fact Confirmed</div><div class="card-desc">The sound queue is exactly 10 seconds, allowing pros to calculate round-saving defuses.</div>`;
-                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            } else {
-                card.style.borderLeftColor = 'var(--text-muted)';
-                card.style.opacity = '0.5';
-                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-            }
-        }
-
-        // Выбор языка ИИ
-        function setLang(lang) {
-            document.getElementById('ai-chat').style.display = 'block';
-            const res = document.getElementById('ai-response');
-            if(lang === 'Русский') res.innerText = 'Язык изменен на Русский. Калибровка завершена. Чем могу помочь? Я анализирую рынок и собираю кастомные инвентари.';
-            else res.innerText = 'Language set to English. Calibrated. How can I assist you today?';
+            const wheel = document.getElementById('wheel');
+            // Крутим рандомно от 4 до 8 оборотов
+            const rotation = Math.floor(Math.random() * 1440) + 1440; 
+            wheel.style.transform = `rotate(${rotation}deg)`;
         }
     </script>
 </body>
