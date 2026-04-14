@@ -1,1 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>CS2 Terminal</title>
+    <style>
+        body { background: #121212; color: white; font-family: sans-serif; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Отдельное окно для новостей */
+        .news-window { background: #1a1a2e; border-left: 4px solid #f5b041; width: 100%; max-width: 350px; padding: 15px; border-radius: 8px; margin-bottom: 25px; box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .news-header { font-weight: bold; color: #f5b041; margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .news-text { color: #e0e0e0; font-size: 14px; transition: opacity 0.5s; min-height: 40px; }
 
+        .case-box { background: #1e1e1e; padding: 25px; border-radius: 10px; text-align: center; width: 100%; max-width: 350px; box-sizing: border-box; }
+        #drop-name { font-size: 22px; font-weight: bold; margin: 20px 0; height: 30px; }
+        .stats { background: #2a2a2a; padding: 15px; border-radius: 8px; font-size: 14px; text-align: left; display: none; margin-bottom: 20px; }
+        .stats span { color: #f5b041; font-weight: bold; }
+        
+        button { background: #f5b041; color: #000; border: none; padding: 15px; width: 100%; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        button:active { transform: scale(0.97); }
+        button:disabled { background: #555; color: #888; }
+        
+        .covert { color: #eb4b4b; text-shadow: 0 0 10px rgba(235,75,75,0.5); }
+        .restricted { color: #d32ce6; }
+        .milspec { color: #4b69ff; }
+    </style>
+</head>
+<body>
+
+    <div class="news-window">
+        <div class="news-header">⚡ Market Live</div>
+        <div class="news-text" id="news-text">Подключение к серверу рынка...</div>
+    </div>
+
+    <div class="case-box">
+        <h2>Recoil Case</h2>
+        <div id="drop-name">Ждет открытия...</div>
+        <div class="stats" id="stats-box">
+            <p>Wear: <span id="wear"></span></p>
+            <p>Float: <span id="float"></span></p>
+            <p>Pattern: <span id="pattern"></span></p>
+        </div>
+        <button onclick="openCase()" id="btn">Открыть ($2.49)</button>
+    </div>
+
+    <script>
+        // Сообщаем Telegram, что приложение готово, и разворачиваем его
+        const tg = window.Telegram.WebApp;
+        tg.expand(); 
+
+        // Логика новостной строки (меняет текст каждые 4 секунды)
+        const newsList = [
+            "🔥 Butterfly Knife | Doppler вырос на 4.2% за сутки",
+            "📉 Просадка цен на кейсы операции Riptide",
+            "💎 Игрок @user123 только что выбил AWP | Dragon Lore!",
+            "📈 AK-47 | Slate — лидер объемов торгов сегодня"
+        ];
+        let newsIndex = 0;
+        const newsElement = document.getElementById("news-text");
+
+        setInterval(() => {
+            newsElement.style.opacity = 0;
+            setTimeout(() => {
+                newsIndex = (newsIndex + 1) % newsList.length;
+                newsElement.innerText = newsList[newsIndex];
+                newsElement.style.opacity = 1;
+            }, 500); // Время анимации затухания
+        }, 4000); // Менять новость каждые 4 секунды
+
+        // Логика открытия кейса
+        function openCase() {
+            const btn = document.getElementById('btn');
+            const dropNameElement = document.getElementById('drop-name');
+            const statsBox = document.getElementById('stats-box');
+            
+            btn.disabled = true;
+            dropNameElement.innerText = "Крутим рулетку...";
+            dropNameElement.className = "";
+            statsBox.style.display = "none";
+            
+            // Если открывают с телефона в ТГ — будет легкая вибрация
+            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+
+            setTimeout(() => {
+                const random = Math.random();
+                let skin = "", rarityClass = "";
+
+                if (random < 0.05) { skin = "★ Printstream (USP-S)"; rarityClass = "covert"; } 
+                else if (random < 0.20) { skin = "Ice Coaled (AK-47)"; rarityClass = "restricted"; } 
+                else { skin = "Mecha Industries (Famas)"; rarityClass = "milspec"; }
+
+                const floatValue = (Math.random()).toFixed(5);
+                let wear = "";
+                if (floatValue < 0.07) wear = "Factory New";
+                else if (floatValue < 0.15) wear = "Minimal Wear";
+                else if (floatValue < 0.38) wear = "Field-Tested";
+                else wear = "Battle-Scarred";
+
+                dropNameElement.innerText = skin;
+                dropNameElement.className = rarityClass;
+                document.getElementById('wear').innerText = wear;
+                document.getElementById('float').innerText = floatValue;
+                document.getElementById('pattern').innerText = Math.floor(Math.random() * 1000) + 1;
+                
+                statsBox.style.display = "block";
+                btn.disabled = false;
+                
+                // Вибрация успеха
+                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
