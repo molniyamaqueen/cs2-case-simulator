@@ -1,115 +1,226 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <title>CS2 Terminal</title>
+    <title>CS2 Ecosystem</title>
     <style>
-        body { background: #121212; color: white; font-family: sans-serif; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
-        
-        /* Отдельное окно для новостей */
-        .news-window { background: #1a1a2e; border-left: 4px solid #f5b041; width: 100%; max-width: 350px; padding: 15px; border-radius: 8px; margin-bottom: 25px; box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .news-header { font-weight: bold; color: #f5b041; margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
-        .news-text { color: #e0e0e0; font-size: 14px; transition: opacity 0.5s; min-height: 40px; }
+        :root {
+            --bg-dark: #0F1115;
+            --bg-card: #1A1D24;
+            --neon-green: #00FFA3;
+            --neon-blue: #007BFF;
+            --text-main: #FFFFFF;
+            --text-muted: #8B92A5;
+            --border: rgba(255, 255, 255, 0.05);
+        }
 
-        .case-box { background: #1e1e1e; padding: 25px; border-radius: 10px; text-align: center; width: 100%; max-width: 350px; box-sizing: border-box; }
-        #drop-name { font-size: 22px; font-weight: bold; margin: 20px 0; height: 30px; }
-        .stats { background: #2a2a2a; padding: 15px; border-radius: 8px; font-size: 14px; text-align: left; display: none; margin-bottom: 20px; }
-        .stats span { color: #f5b041; font-weight: bold; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         
-        button { background: #f5b041; color: #000; border: none; padding: 15px; width: 100%; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-        button:active { transform: scale(0.97); }
-        button:disabled { background: #555; color: #888; }
+        body { 
+            background-color: var(--bg-dark); color: var(--text-main); 
+            margin: 0; padding: 0; padding-bottom: 80px; 
+            background-image: radial-gradient(circle at 50% 0%, rgba(0, 123, 255, 0.1) 0%, transparent 50%);
+        }
+
+        /* TOP BAR */
+        .top-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; background: rgba(15, 17, 21, 0.8);
+            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+        .icon-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 8px 12px; border-radius: 8px; font-weight: bold; }
+        .economy { display: flex; gap: 15px; font-size: 14px; font-weight: 600; }
+        .eco-item { display: flex; align-items: center; gap: 5px; }
+        .eco-energy { color: var(--neon-blue); }
+        .eco-coins { color: var(--neon-green); }
+
+        /* TABS CONTAINER */
+        .tab-content { display: none; padding: 20px; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ARENA (TAB 1) */
+        .arena-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; color: var(--text-muted); }
+        .arena-circle {
+            width: 250px; height: 250px; border-radius: 50%; margin: 0 auto 30px;
+            border: 4px solid var(--bg-card); position: relative;
+            box-shadow: 0 0 30px rgba(0, 123, 255, 0.15);
+            display: flex; align-items: center; justify-content: center;
+            background: conic-gradient(from 0deg, var(--neon-blue) 0% 20%, #2A2D3A 20% 60%, var(--neon-green) 60% 100%);
+            transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .arena-circle::after { content: ''; position: absolute; width: 220px; height: 220px; background: var(--bg-dark); border-radius: 50%; }
+        .arena-center-text { position: absolute; z-index: 2; text-align: center; }
+        .arena-center-text h2 { margin: 0; font-size: 24px; color: var(--text-main); }
+        .arena-center-text p { margin: 5px 0 0; font-size: 12px; color: var(--neon-blue); text-transform: uppercase; letter-spacing: 2px; }
+
+        /* SIGNALS (TAB 2) */
+        .signal-card { background: var(--bg-card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border-left: 4px solid var(--neon-blue); }
+        .signal-card.myth { border-left: 4px solid #FF3366; }
+        .card-tag { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; margin-bottom: 8px; }
+        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 8px; }
+        .card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+        .myth-buttons { display: flex; gap: 10px; margin-top: 15px; }
+
+        /* BUTTONS */
+        .btn-primary { background: var(--neon-green); color: #000; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.2s; }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
         
-        .covert { color: #eb4b4b; text-shadow: 0 0 10px rgba(235,75,75,0.5); }
-        .restricted { color: #d32ce6; }
-        .milspec { color: #4b69ff; }
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg-card);
+            display: flex; justify-content: space-around; padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+            border-top: 1px solid var(--border); z-index: 100;
+        }
+        .nav-item { color: var(--text-muted); text-align: center; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.3s; width: 25%; }
+        .nav-item.active { color: var(--text-main); }
+        .nav-item.active .nav-icon { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 123, 255, 0.5); }
+        .nav-icon { display: block; font-size: 20px; margin-bottom: 4px; transition: 0.3s; }
     </style>
 </head>
 <body>
 
-    <div class="news-window">
-        <div class="news-header">⚡ Market Live</div>
-        <div class="news-text" id="news-text">Подключение к серверу рынка...</div>
+    <div class="top-bar">
+        <div class="icon-btn">i</div>
+        <div class="economy">
+            <div class="eco-item eco-energy">⚡ 120</div>
+            <div class="eco-item eco-coins">🪙 1,450</div>
+        </div>
+        <div class="icon-btn">💬</div>
     </div>
 
-    <div class="case-box">
-        <h2>Recoil Case</h2>
-        <div id="drop-name">Ждет открытия...</div>
-        <div class="stats" id="stats-box">
-            <p>Wear: <span id="wear"></span></p>
-            <p>Float: <span id="float"></span></p>
-            <p>Pattern: <span id="pattern"></span></p>
+    <div id="tab-arena" class="tab-content active">
+        <div class="arena-header">
+            <span>🔥 Entries: 4,202</span>
+            <span style="color: var(--neon-green)">Live: 00:24</span>
         </div>
-        <button onclick="openCase()" id="btn">Открыть ($2.49)</button>
+        
+        <div class="arena-circle" id="arena-wheel">
+            <div class="arena-center-text">
+                <h2>ENGAGE</h2>
+                <p>To Win</p>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="spinArena()">Join Round (10 ⚡)</button>
+    </div>
+
+    <div id="tab-signals" class="tab-content">
+        <div class="signal-card myth" id="myth-card">
+            <div class="card-tag">Interactive: Myth or Fact</div>
+            <div class="card-title">Bomb Defuse Audio Cue</div>
+            <div class="card-desc">"The defuse sound plays globally exactly 10 seconds before detonation."</div>
+            <div class="myth-buttons">
+                <button class="btn-outline" onclick="resolveMyth(false)">❌ MYTH</button>
+                <button class="btn-outline" onclick="resolveMyth(true)">✅ FACT</button>
+            </div>
+        </div>
+
+        <div class="signal-card">
+            <div class="card-tag">Meta Shift</div>
+            <div class="card-title">M4A4 Pick Rate Dropping 📉</div>
+            <div class="card-desc">Pro usage down 14% at IEM Katowice. Recommendation: Hold M4A1-S skins, market liquidity dropping for A4.</div>
+        </div>
+    </div>
+
+    <div id="tab-ai" class="tab-content">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 40px; margin-bottom: 10px;">🧠</div>
+            <h3 style="margin: 0">System Initialized</h3>
+            <p style="color: var(--text-muted); font-size: 13px;">Select preferred language for tactical and market analysis.</p>
+        </div>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button class="btn-outline" onclick="setLang('English')">English</button>
+            <button class="btn-outline" onclick="setLang('Русский')">Русский</button>
+        </div>
+        <div id="ai-chat" class="signal-card" style="display: none; border-left-color: var(--neon-green);">
+            <div class="card-title">AI: Ready</div>
+            <div class="card-desc" id="ai-response">I am calibrated. How can I assist you today? I can analyze market trends or build custom loadouts.</div>
+        </div>
+    </div>
+
+    <div id="tab-profile" class="tab-content">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+            <div style="width: 70px; height: 70px; background: var(--bg-card); border-radius: 16px; border: 2px solid var(--neon-blue); display: flex; align-items: center; justify-content: center; font-size: 30px;">🕵️</div>
+            <div>
+                <h3 style="margin: 0;">Ghost_CS</h3>
+                <p style="margin: 5px 0 0; color: var(--text-muted); font-size: 13px;">Engagement Score: <span style="color: var(--neon-green)">940</span></p>
+            </div>
+        </div>
+
+        <div class="signal-card">
+            <div class="card-tag">Referral Network</div>
+            <div class="card-title">Expand the Squad</div>
+            <div class="card-desc">Invite real players. Increase your Engagement Score. Passive energy earned: +40/day.</div>
+            <button class="btn-outline" style="margin-top: 15px; border-color: var(--neon-blue); color: var(--neon-blue);">Copy Secure Invite Link</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('arena', this)">
+            <span class="nav-icon">🎯</span> Games
+        </div>
+        <div class="nav-item" onclick="switchTab('signals', this)">
+            <span class="nav-icon">📊</span> Signals
+        </div>
+        <div class="nav-item" onclick="switchTab('ai', this)">
+            <span class="nav-icon">🧠</span> Assistant
+        </div>
+        <div class="nav-item" onclick="switchTab('profile', this)">
+            <span class="nav-icon">👤</span> Profile
+        </div>
     </div>
 
     <script>
-        // Сообщаем Telegram, что приложение готово, и разворачиваем его
         const tg = window.Telegram.WebApp;
-        tg.expand(); 
+        tg.expand();
 
-        // Логика новостной строки (меняет текст каждые 4 секунды)
-        const newsList = [
-            "🔥 Butterfly Knife | Doppler вырос на 4.2% за сутки",
-            "📉 Просадка цен на кейсы операции Riptide",
-            "💎 Игрок @user123 только что выбил AWP | Dragon Lore!",
-            "📈 AK-47 | Slate — лидер объемов торгов сегодня"
-        ];
-        let newsIndex = 0;
-        const newsElement = document.getElementById("news-text");
+        // Навигация
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            element.classList.add('active');
+            if(tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+        }
 
-        setInterval(() => {
-            newsElement.style.opacity = 0;
-            setTimeout(() => {
-                newsIndex = (newsIndex + 1) % newsList.length;
-                newsElement.innerText = newsList[newsIndex];
-                newsElement.style.opacity = 1;
-            }, 500); // Время анимации затухания
-        }, 4000); // Менять новость каждые 4 секунды
-
-        // Логика открытия кейса
-        function openCase() {
-            const btn = document.getElementById('btn');
-            const dropNameElement = document.getElementById('drop-name');
-            const statsBox = document.getElementById('stats-box');
+        // Анимация Арены (Имитация рулетки)
+        function spinArena() {
+            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+            const wheel = document.getElementById('arena-wheel');
+            const randomRotation = Math.floor(Math.random() * 360) + 1440; // Крутим минимум 4 раза
+            wheel.style.transform = `rotate(${randomRotation}deg)`;
             
-            btn.disabled = true;
-            dropNameElement.innerText = "Крутим рулетку...";
-            dropNameElement.className = "";
-            statsBox.style.display = "none";
-            
-            // Если открывают с телефона в ТГ — будет легкая вибрация
-            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-
             setTimeout(() => {
-                const random = Math.random();
-                let skin = "", rarityClass = "";
-
-                if (random < 0.05) { skin = "★ Printstream (USP-S)"; rarityClass = "covert"; } 
-                else if (random < 0.20) { skin = "Ice Coaled (AK-47)"; rarityClass = "restricted"; } 
-                else { skin = "Mecha Industries (Famas)"; rarityClass = "milspec"; }
-
-                const floatValue = (Math.random()).toFixed(5);
-                let wear = "";
-                if (floatValue < 0.07) wear = "Factory New";
-                else if (floatValue < 0.15) wear = "Minimal Wear";
-                else if (floatValue < 0.38) wear = "Field-Tested";
-                else wear = "Battle-Scarred";
-
-                dropNameElement.innerText = skin;
-                dropNameElement.className = rarityClass;
-                document.getElementById('wear').innerText = wear;
-                document.getElementById('float').innerText = floatValue;
-                document.getElementById('pattern').innerText = Math.floor(Math.random() * 1000) + 1;
-                
-                statsBox.style.display = "block";
-                btn.disabled = false;
-                
-                // Вибрация успеха
                 if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            }, 1200);
+                tg.showAlert('Victory Secured! Engagement Score +50.');
+            }, 3000);
+        }
+
+        // Логика Миф/Факт
+        function resolveMyth(isFact) {
+            const card = document.getElementById('myth-card');
+            if(isFact) {
+                card.style.borderLeftColor = 'var(--neon-green)';
+                card.innerHTML = `<div class="card-tag" style="color: var(--neon-green)">CORRECT! +10 Energy</div><div class="card-title">Fact Confirmed</div><div class="card-desc">The sound queue is exactly 10 seconds, allowing pros to calculate round-saving defuses.</div>`;
+                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                card.style.borderLeftColor = 'var(--text-muted)';
+                card.style.opacity = '0.5';
+                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+            }
+        }
+
+        // Выбор языка ИИ
+        function setLang(lang) {
+            document.getElementById('ai-chat').style.display = 'block';
+            const res = document.getElementById('ai-response');
+            if(lang === 'Русский') res.innerText = 'Язык изменен на Русский. Калибровка завершена. Чем могу помочь? Я анализирую рынок и собираю кастомные инвентари.';
+            else res.innerText = 'Language set to English. Calibrated. How can I assist you today?';
         }
     </script>
 </body>
