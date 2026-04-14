@@ -3,151 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
     <title>CS2 Premium</title>
-    
-    <script>
-        // Настраиваем киберспортивные цвета
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        dark: '#0F1115',
-                        panel: '#1A1D24',
-                        accent: '#00FFA3', /* Неоновый зеленый */
-                        primary: '#007BFF', /* Синий */
-                        muted: '#8B92A5',
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { background-color: #0F1115; color: white; -webkit-tap-highlight-color: transparent; }
-        .tab-content { display: none; animation: fadeIn 0.3s; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Светящаяся круглая арена */
-        .arena-circle {
-            background: conic-gradient(from 0deg, #007BFF 0% 20%, #2A2D3A 20% 60%, #00FFA3 60% 100%);
-            box-shadow: 0 0 40px rgba(0, 123, 255, 0.2);
-            transition: transform 3s cubic-bezier(0.1, 0.8, 0.2, 1);
+        :root {
+            --bg: #0F1115;
+            --panel: #1A1D24;
+            --accent: #00FFA3; /* Неоновый зеленый */
+            --primary: #007BFF; /* Синий */
+            --text: #E0E0E0;
+            --muted: #6B7280;
         }
+        
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        body { background: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        /* Верхняя панель */
+        .header { background: rgba(26, 29, 36, 0.9); padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .balance { font-size: 15px; font-weight: 800; color: var(--text); display: flex; gap: 15px; }
+        .bal-item span { color: var(--accent); text-shadow: 0 0 10px rgba(0, 255, 163, 0.4); margin-right: 4px; }
+        .bal-item.energy span { color: var(--primary); text-shadow: 0 0 10px rgba(0, 123, 255, 0.4); }
+
+        /* Вкладки */
+        .tab { display: none; padding: 20px; padding-bottom: 90px; animation: slideUp 0.3s ease; }
+        .tab.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Арена */
+        .arena-top { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--muted); margin-bottom: 40px; letter-spacing: 1px; }
+        .arena-top .live { color: var(--accent); text-shadow: 0 0 8px rgba(0, 255, 163, 0.5); }
+        
+        .wheel-wrap { width: 240px; height: 240px; margin: 0 auto 40px; position: relative; border-radius: 50%; background: conic-gradient(from 0deg, var(--primary) 0% 15%, #2A2D3A 15% 50%, var(--accent) 50% 100%); padding: 3px; box-shadow: 0 0 40px rgba(0, 123, 255, 0.15); transition: transform 3.5s cubic-bezier(0.1, 0.8, 0.1, 1); }
+        .wheel-inner { background: var(--bg); width: 100%; height: 100%; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .wheel-inner h2 { margin: 0; font-size: 26px; font-weight: 900; letter-spacing: 2px; }
+        .wheel-inner p { margin: 4px 0 0; font-size: 10px; color: var(--primary); font-weight: 800; text-transform: uppercase; letter-spacing: 3px; }
+
+        /* Кнопка */
+        .btn { background: var(--accent); color: #000; border: none; width: 100%; padding: 18px; border-radius: 12px; font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px rgba(0, 255, 163, 0.3); transition: transform 0.1s; cursor: pointer; }
+        .btn:active { transform: scale(0.96); }
+
+        /* Нижнее меню */
+        .nav { position: fixed; bottom: 0; width: 100%; background: var(--panel); display: flex; padding: 12px 0 calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid rgba(255,255,255,0.05); z-index: 100; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; color: var(--muted); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; transition: 0.3s; cursor: pointer; }
+        .nav-item svg { width: 24px; height: 24px; fill: currentColor; margin-bottom: 6px; transition: 0.3s; }
+        .nav-item.active { color: var(--text); }
+        .nav-item.active svg { fill: var(--primary); filter: drop-shadow(0 0 8px rgba(0, 123, 255, 0.6)); }
     </style>
 </head>
-<body class="pb-24">
+<body>
 
-    <header class="sticky top-0 z-50 bg-dark/90 backdrop-blur-md border-b border-white/10 px-4 py-3 flex justify-between items-center">
-        <button class="w-10 h-10 rounded-xl bg-panel border border-white/10 text-muted flex items-center justify-center">
-            <i class="fa-solid fa-info"></i>
-        </button>
-        
-        <div class="flex gap-4 font-bold text-sm">
-            <div class="flex items-center gap-1.5"><span class="text-primary text-lg">⚡</span> 120</div>
-            <div class="flex items-center gap-1.5"><span class="text-accent text-lg">🪙</span> 1,450</div>
-        </div>
-
-        <button class="w-10 h-10 rounded-xl bg-panel border border-white/10 text-muted flex items-center justify-center">
-            <i class="fa-solid fa-comment-dots"></i>
-        </button>
-    </header>
-
-    <div id="tab-arena" class="tab-content active px-4 pt-6">
-        <div class="flex justify-between items-center text-xs font-bold text-muted uppercase tracking-wider mb-8">
-            <span>🔥 Билетов: 4,202</span>
-            <span class="text-accent">Старт: 00:24</span>
-        </div>
-        
-        <div class="relative w-64 h-64 mx-auto mb-10">
-            <div id="wheel" class="arena-circle w-full h-full rounded-full flex items-center justify-center">
-                <div class="w-56 h-56 bg-dark rounded-full flex flex-col items-center justify-center z-10">
-                    <h2 class="text-3xl font-black tracking-wider">АРЕНА</h2>
-                    <p class="text-primary text-xs font-bold tracking-widest mt-1 uppercase">Жми старт</p>
-                </div>
-            </div>
-        </div>
-
-        <button onclick="playArena()" class="w-full bg-accent text-black font-black py-4 rounded-2xl uppercase tracking-widest text-sm shadow-[0_0_20px_rgba(0,255,163,0.3)] active:scale-95 transition-transform">
-            Войти в раунд (10 ⚡)
-        </button>
-    </div>
-
-    <div id="tab-signals" class="tab-content px-4 pt-6">
-        <div class="bg-panel rounded-2xl p-5 border-l-4 border-primary mb-4 relative overflow-hidden">
-            <div class="text-[10px] text-muted font-bold uppercase tracking-wider mb-2">Интерактив: Миф или Факт</div>
-            <h3 class="font-bold text-lg mb-2">Звук разминирования</h3>
-            <p class="text-sm text-gray-400 mb-4">"Звук дефуза бомбы слышен на всей карте ровно за 10 секунд до взрыва."</p>
-            <div class="flex gap-3">
-                <button class="flex-1 py-2 border border-white/10 rounded-xl text-sm font-bold text-gray-300">❌ Миф</button>
-                <button class="flex-1 py-2 border border-white/10 rounded-xl text-sm font-bold text-gray-300 bg-white/5">✅ Факт</button>
-            </div>
-        </div>
-        
-        <div class="bg-panel rounded-2xl p-5 border-l-4 border-accent">
-            <div class="text-[10px] text-muted font-bold uppercase tracking-wider mb-2">Аналитика рынка</div>
-            <h3 class="font-bold text-lg mb-2">M4A4 падает в цене 📉</h3>
-            <p class="text-sm text-gray-400">Частота покупок на турнирах упала на 14%. Совет: держите скины на M4A1-S.</p>
+    <div class="header">
+        <div class="balance">
+            <div class="bal-item energy"><span>⚡</span> 120</div>
+            <div class="bal-item"><span>🪙</span> 1,450</div>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 w-full bg-panel border-t border-white/10 px-2 py-2 flex justify-between z-50 pb-safe">
-        <button onclick="switchTab('arena')" id="btn-arena" class="nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-primary">
-            <i class="fa-solid fa-crosshairs text-xl drop-shadow-[0_0_8px_rgba(0,123,255,0.5)]"></i>
-            <span class="text-[10px] font-bold uppercase">Арена</span>
-        </button>
-        <button onclick="switchTab('signals')" id="btn-signals" class="nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-muted hover:text-white/70">
-            <i class="fa-solid fa-chart-simple text-xl"></i>
-            <span class="text-[10px] font-bold uppercase">Сигналы</span>
-        </button>
-        <button class="nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-muted hover:text-white/70">
-            <i class="fa-solid fa-robot text-xl"></i>
-            <span class="text-[10px] font-bold uppercase">AI Помощник</span>
-        </button>
-        <button class="nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-muted hover:text-white/70">
-            <i class="fa-regular fa-user text-xl"></i>
-            <span class="text-[10px] font-bold uppercase">Профиль</span>
-        </button>
-    </nav>
+    <div id="tab-arena" class="tab active">
+        <div class="arena-top">
+            <span>Всего билетов: 4,202</span>
+            <span class="live">Старт: 00:24</span>
+        </div>
+        
+        <div class="wheel-wrap" id="wheel">
+            <div class="wheel-inner">
+                <h2>АРЕНА</h2>
+                <p>Ожидание</p>
+            </div>
+        </div>
+
+        <button class="btn" onclick="spinWheel()">Войти в раунд (10 ⚡)</button>
+    </div>
+
+    <div id="tab-signals" class="tab">
+        <div style="background: var(--panel); border-radius: 16px; padding: 20px; border-left: 4px solid var(--accent); margin-bottom: 15px;">
+            <div style="font-size: 10px; color: var(--muted); font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">Аналитика рынка</div>
+            <h3 style="margin: 0 0 8px; font-size: 18px;">M4A4 падает в цене 📉</h3>
+            <p style="margin: 0; font-size: 14px; color: #9ca3af; line-height: 1.5;">Частота пиков на про-сцене упала на 14%. Совет: держите скины на M4A1-S, ликвидность A4 падает.</p>
+        </div>
+    </div>
+
+    <div class="nav">
+        <div class="nav-item active" id="btn-arena" onclick="switchTab('arena')">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></svg>
+            Арена
+        </div>
+        <div class="nav-item" id="btn-signals" onclick="switchTab('signals')">
+            <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6h-6z"/></svg>
+            Сигналы
+        </div>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.setHeaderColor('#1A1D24'); // Красим системную шапку телеги
 
-        // Простое переключение вкладок
         function switchTab(tabName) {
-            // Скрываем все вкладки
             document.getElementById('tab-arena').classList.remove('active');
             document.getElementById('tab-signals').classList.remove('active');
-            
-            // Красим все кнопки в серый
-            document.getElementById('btn-arena').className = "nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-muted";
-            document.getElementById('btn-signals').className = "nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-muted";
-            
-            // Убираем свечение с иконок
-            document.querySelector('#btn-arena i').classList.remove('drop-shadow-[0_0_8px_rgba(0,123,255,0.5)]');
-            document.querySelector('#btn-signals i').classList.remove('drop-shadow-[0_0_8px_rgba(0,123,255,0.5)]');
+            document.getElementById('btn-arena').classList.remove('active');
+            document.getElementById('btn-signals').classList.remove('active');
 
-            // Включаем нужную вкладку
             document.getElementById('tab-' + tabName).classList.add('active');
-            
-            // Делаем нужную кнопку синей и со свечением
-            const activeBtn = document.getElementById('btn-' + tabName);
-            activeBtn.className = "nav-btn flex-1 flex flex-col items-center gap-1 p-2 text-primary";
-            activeBtn.querySelector('i').classList.add('drop-shadow-[0_0_8px_rgba(0,123,255,0.5)]');
+            document.getElementById('btn-' + tabName).classList.add('active');
 
             if(tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
         }
 
-        // Анимация рулетки
-        function playArena() {
+        function spinWheel() {
             if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
             const wheel = document.getElementById('wheel');
-            // Крутим рандомно от 4 до 8 оборотов
-            const rotation = Math.floor(Math.random() * 1440) + 1440; 
+            const rotation = Math.floor(Math.random() * 1440) + 1440;
             wheel.style.transform = `rotate(${rotation}deg)`;
         }
     </script>
