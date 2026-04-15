@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import './index.css' // Мы подключили краску!
 import App from './App.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
