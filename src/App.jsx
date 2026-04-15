@@ -1,9 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Gamepad2, Target, BookOpen, User, TrendingUp, Activity, Crosshair, BarChart2, ChevronRight, PlayCircle } from 'lucide-react';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('signals');
   const [balance, setBalance] = useState(1540.50);
+  
+  // Создаем хранилище для данных из Телеграма
+  const [tgUser, setTgUser] = useState(null);
+
+  // Этот блок срабатывает один раз при запуске аппки
+  useEffect(() => {
+    // Проверяем, открыто ли приложение внутри Телеграма
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready(); // Говорим Телеграму, что мы загрузились
+      const user = tg.initDataUnsafe?.user;
+      
+      if (user) {
+        setTgUser({
+          firstName: user.first_name,
+          lastName: user.last_name,
+          username: user.username,
+          photoUrl: user.photo_url
+        });
+      }
+    }
+  }, []);
 
   // Компонент нижней кнопки навигации
   const NavButton = ({ id, icon, label }) => {
@@ -21,10 +43,14 @@ const App = () => {
     );
   };
 
+  // Формируем имя для отображения
+  const displayName = tgUser?.firstName || 'Agent';
+  const displayUsername = tgUser?.username ? `@${tgUser.username}` : 'Classified';
+
   return (
     <div className="flex flex-col h-screen bg-[#0a0a0c] text-white font-sans overflow-hidden">
       
-      {/* HEADER (Стиль Steam/CS2) */}
+      {/* HEADER */}
       <header className="flex justify-between items-center px-4 py-3 bg-[#111115] border-b border-white/5 z-10">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center font-black text-black">
@@ -41,10 +67,9 @@ const App = () => {
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 overflow-y-auto pb-24 px-4 pt-4">
         
-        {/* ЭКРАН СИГНАЛОВ И АНАЛИТИКИ (Signals & Cybersport) */}
+        {/* ЭКРАН СИГНАЛОВ */}
         {activeTab === 'signals' && (
           <div className="space-y-4 animate-in fade-in duration-300">
-            {/* Live Signal Card */}
             <div className="bg-gradient-to-br from-orange-500/20 to-red-500/10 border border-orange-500/30 rounded-2xl p-4 relative overflow-hidden">
               <div className="absolute top-0 right-0 bg-orange-500 text-black text-[10px] font-black px-2 py-1 rounded-bl-lg uppercase tracking-wider flex items-center">
                 <Activity size={10} className="mr-1 animate-pulse" /> Live Signal
@@ -69,7 +94,6 @@ const App = () => {
               </button>
             </div>
 
-            {/* Cybersport Analytics */}
             <h3 className="font-bold text-sm text-gray-400 uppercase tracking-wider mt-6 mb-2 flex items-center">
               <BarChart2 size={16} className="mr-2" /> Market & Analytics
             </h3>
@@ -92,55 +116,25 @@ const App = () => {
           </div>
         )}
 
-        {/* ЭКРАН БАЗЫ ЗНАНИЙ (News & Guides) */}
-        {activeTab === 'news' && (
-          <div className="space-y-4 animate-in fade-in duration-300">
-            {/* Hot Guide */}
-            <div className="h-40 rounded-2xl bg-[#15151a] border border-white/5 overflow-hidden relative group">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent z-10"></div>
-              {/* Вместо картинки заглушка с градиентом, потом поменяешь на реальное фото */}
-              <div className="absolute inset-0 bg-blue-900/30"></div>
-              <div className="absolute bottom-0 left-0 p-4 z-20 w-full">
-                <div className="bg-blue-500 text-xs font-bold inline-block px-2 py-0.5 rounded text-white mb-2">PRO GUIDE</div>
-                <h3 className="font-bold text-lg leading-tight mb-1">Mirage Window Smokes: CS2 Update</h3>
-                <p className="text-xs text-gray-400 flex items-center"><PlayCircle size={12} className="mr-1" /> 5 min read</p>
-              </div>
-            </div>
-
-            <h3 className="font-bold text-sm text-gray-400 uppercase tracking-wider mt-6 mb-2">Latest News</h3>
-            
-            <div className="space-y-2">
-              {[
-                { title: "Valve release massive update fixing sub-tick", time: "2 hours ago", tag: "Update" },
-                { title: "S1mple announces return to pro scene", time: "5 hours ago", tag: "Esports" },
-                { title: "New case drop pool analyzed", time: "1 day ago", tag: "Economy" }
-              ].map((news, i) => (
-                <div key={i} className="bg-[#15151a] p-3 rounded-xl border border-white/5 flex items-center justify-between">
-                  <div className="pr-4">
-                    <span className="text-[10px] text-orange-500 font-bold uppercase">{news.tag}</span>
-                    <h4 className="font-bold text-sm leading-tight mt-0.5">{news.title}</h4>
-                    <span className="text-[10px] text-gray-500">{news.time}</span>
-                  </div>
-                  <ChevronRight size={16} className="text-gray-600 shrink-0" />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ЭКРАН ПРОФИЛЯ */}
+        {/* ЭКРАН ПРОФИЛЯ (ТЕПЕРЬ ЖИВОЙ!) */}
         {activeTab === 'profile' && (
           <div className="space-y-4 animate-in fade-in duration-300">
             <div className="bg-[#15151a] p-4 rounded-2xl flex items-center justify-between border border-white/5">
               <div className="flex items-center space-x-3">
-                <div className="w-14 h-14 bg-gradient-to-tr from-orange-500 to-yellow-500 rounded-xl p-0.5">
-                  <div className="w-full h-full bg-zinc-900 rounded-[10px] flex items-center justify-center">
-                    <User size={24} className="text-orange-400" />
-                  </div>
+                <div className="w-14 h-14 bg-gradient-to-tr from-orange-500 to-yellow-500 rounded-xl p-0.5 overflow-hidden">
+                  {/* Если есть фото из ТГ - показываем его, иначе иконку */}
+                  {tgUser?.photoUrl ? (
+                    <img src={tgUser.photoUrl} alt="Profile" className="w-full h-full rounded-[10px] object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-zinc-900 rounded-[10px] flex items-center justify-center">
+                      <User size={24} className="text-orange-400" />
+                    </div>
+                  )}
                 </div>
                 <div>
-                  <h2 className="font-bold text-lg">CS_User</h2>
-                  <span className="text-[10px] text-gray-400 uppercase tracking-wider">Premium Member</span>
+                  {/* Подставляем реальное имя и ник */}
+                  <h2 className="font-bold text-lg">{displayName}</h2>
+                  <span className="text-[10px] text-gray-400 uppercase tracking-wider">{displayUsername}</span>
                 </div>
               </div>
             </div>
@@ -158,12 +152,20 @@ const App = () => {
           </div>
         )}
 
-        {/* ЗАГЛУШКА ИГРЫ */}
+        {/* ЗАГЛУШКИ */}
+        {activeTab === 'news' && (
+          <div className="flex flex-col h-full items-center justify-center text-center mt-20">
+            <BookOpen size={48} className="text-orange-500 mb-4 opacity-50" />
+            <h3 className="text-xl font-black italic mb-2">CS2 HUB</h3>
+            <p className="text-sm text-gray-500 w-2/3">News and Pro Guides are loading...</p>
+          </div>
+        )}
+        
         {activeTab === 'games' && (
           <div className="flex flex-col h-full items-center justify-center text-center mt-20">
             <Gamepad2 size={48} className="text-orange-500 mb-4 opacity-50" />
             <h3 className="text-xl font-black italic mb-2">MINI-GAMES</h3>
-            <p className="text-sm text-gray-500 w-2/3">Case opening and roulette simulators are loading...</p>
+            <p className="text-sm text-gray-500 w-2/3">Case opening simulators are loading...</p>
           </div>
         )}
 
