@@ -1,0 +1,75 @@
+// App.jsx
+import React, { useState, useEffect } from 'react';
+import WebApp from '@twa-dev/sdk';
+import { Info, MessageCircle, Gamepad2, Activity, Bot, User } from 'lucide-react';
+import GamesTab from './components/GamesTab';
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('games');
+
+  useEffect(() => {
+    WebApp.ready();
+    WebApp.expand();
+    WebApp.setHeaderColor('#0F172A'); // Dark slate cyber theme
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-20 selection:bg-emerald-500/30">
+      
+      {/* GLOBAL APP HEADER */}
+      <header className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 p-4">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex space-x-3">
+            <button className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition">
+              <Info size={18} className="text-emerald-400" />
+            </button>
+            <button className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition">
+              <MessageCircle size={18} className="text-emerald-400" />
+            </button>
+          </div>
+          <div className="bg-slate-800 px-4 py-2 rounded-full border border-slate-700 shadow-inner">
+            <span className="font-bold text-emerald-400 tracking-wide">💎 14.5 TON</span>
+          </div>
+        </div>
+
+        {/* METRIC CARDS */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Max Win</p>
+            <p className="text-lg font-bold text-white">💎 450.2 TON</p>
+          </div>
+          <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Round Win</p>
+            <p className="text-lg font-bold text-emerald-400">💎 32.8 TON</p>
+          </div>
+        </div>
+      </header>
+
+      {/* TAB CONTENT */}
+      <main className="p-4">
+        {activeTab === 'games' && <GamesTab />}
+        {activeTab === 'signals' && <div className="text-center mt-10 text-slate-500">Signals & News (Coming Soon)</div>}
+        {activeTab === 'ai' && <div className="text-center mt-10 text-slate-500">AI Assistant (Coming Soon)</div>}
+        {activeTab === 'profile' && <div className="text-center mt-10 text-slate-500">Profile (Coming Soon)</div>}
+      </main>
+
+      {/* BOTTOM NAVIGATION */}
+      <nav className="fixed bottom-0 w-full bg-slate-900 border-t border-slate-800 flex justify-around p-3 pb-safe z-50">
+        <NavButton icon={<Gamepad2 />} label="Games" id="games" active={activeTab} onClick={setActiveTab} />
+        <NavButton icon={<Activity />} label="Signals" id="signals" active={activeTab} onClick={setActiveTab} />
+        <NavButton icon={<Bot />} label="Assistant" id="ai" active={activeTab} onClick={setActiveTab} />
+        <NavButton icon={<User />} label="Profile" id="profile" active={activeTab} onClick={setActiveTab} />
+      </nav>
+    </div>
+  );
+}
+
+function NavButton({ icon, label, id, active, onClick }) {
+  const isActive = active === id;
+  return (
+    <button onClick={() => onClick(id)} className={`flex flex-col items-center space-y-1 transition ${isActive ? 'text-emerald-400' : 'text-slate-500 hover:text-slate-300'}`}>
+      {React.cloneElement(icon, { size: 22 })}
+      <span className="text-[10px] uppercase font-bold tracking-widest">{label}</span>
+    </button>
+  );
+}
