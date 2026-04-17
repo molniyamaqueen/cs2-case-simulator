@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Target, Crosshair, Search, User, ChevronRight, MessageSquare, Zap, ShieldAlert, Cpu, Share2, Globe } from 'lucide-react';
+import { Target, Crosshair, Search, User, MessageSquare, Zap, ShieldAlert, Cpu, Share2 } from 'lucide-react';
 
-// --- ЛОКАЛИЗАЦИЯ ---
 const dict = {
   en: {
     arena: 'Arena', hub: 'Hub', news: 'News', profile: 'Profile',
@@ -34,19 +33,26 @@ const App = () => {
   const t = dict[lang] || dict.en;
 
   useEffect(() => {
-    // Инициализация Telegram
-    if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-      window.Telegram.WebApp.setHeaderColor('#000000');
+    // Безопасная инициализация Telegram (без крашей)
+    try {
+      const tg = window.Telegram?.WebApp;
+      if (tg) {
+        tg.ready();
+        tg.expand();
+        if (tg.setHeaderColor) {
+          tg.setHeaderColor('#000000');
+        }
+      }
+    } catch (error) {
+      console.error("TG Init Error:", error);
     }
     
-    // Убираем заставку через 1.8с (плавный переход)
+    // Таймер сплеш-экрана
     const timer = setTimeout(() => setShowSplash(false), 1800);
     return () => clearTimeout(timer);
   }, []);
 
-  // --- СПЛЕШ-ЭКРАН (Вспышка) ---
+  // --- СПЛЕШ-ЭКРАН ---
   if (showSplash) {
     return (
       <div className="fixed inset-0 bg-black flex items-center justify-center z-[100] overflow-hidden">
@@ -73,7 +79,11 @@ const App = () => {
       <button 
         onClick={() => {
           setActiveTab(id);
-          if (window.Telegram?.WebApp?.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+          try {
+            if (window.Telegram?.WebApp?.HapticFeedback) {
+              window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            }
+          } catch (e) {}
         }}
         className={`flex flex-col items-center justify-center px-4 py-2 rounded-2xl transition-all duration-300 ${
           isActive ? 'text-white' : 'text-gray-600 hover:text-gray-400'
@@ -106,9 +116,9 @@ const App = () => {
 
   return (
     <div className="flex flex-col h-screen bg-black text-gray-200 font-sans overflow-hidden">
-      <main className="flex-1 overflow-y-auto pb-28 px-4 pt-4 animate-in fade-in duration-700">
+      <main className="flex-1 overflow-y-auto pb-28 px-4 pt-4">
 
-        {/* ================= ARENA ================= */}
+        {/* --- ARENA --- */}
         {activeTab === 'arena' && (
           <div className="flex flex-col h-full items-center justify-center text-center">
             <Target size={48} className="text-white/10 mb-4" />
@@ -117,10 +127,9 @@ const App = () => {
           </div>
         )}
 
-        {/* ================= HUB (Signals & Guide) ================= */}
+        {/* --- HUB --- */}
         {activeTab === 'hub' && (
           <div className="flex flex-col h-full">
-            {/* Переключатель */}
             <div className="flex space-x-6 mb-6 border-b border-white/10 pb-2">
               <button onClick={() => setHubTab('signals')} className={`text-xl font-black uppercase tracking-wide transition-colors ${hubTab === 'signals' ? 'text-white' : 'text-gray-700'}`}>
                 {t.signals}
@@ -130,7 +139,6 @@ const App = () => {
               </button>
             </div>
 
-            {/* Signals & AI */}
             {hubTab === 'signals' && (
               <div className="space-y-4">
                 <div className="bg-[#111] border border-white/5 p-5 rounded-3xl relative overflow-hidden">
@@ -159,9 +167,8 @@ const App = () => {
               </div>
             )}
 
-            {/* Guide */}
             {hubTab === 'guide' && (
-              <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
+              <div className="space-y-4">
                 <h3 className="text-lg font-bold text-white/90 mb-6 leading-tight">{t.askAi}</h3>
                 <div className="grid grid-cols-2 gap-3">
                   {t.skills.map((skill, i) => (
@@ -175,7 +182,7 @@ const App = () => {
           </div>
         )}
 
-        {/* ================= NEWS (Intel) ================= */}
+        {/* --- NEWS --- */}
         {activeTab === 'news' && (
           <div className="space-y-6">
             <h2 className="text-2xl font-black uppercase tracking-wide text-white mb-6">Intel</h2>
@@ -208,9 +215,9 @@ const App = () => {
           </div>
         )}
 
-        {/* ================= PROFILE ================= */}
+        {/* --- PROFILE --- */}
         {activeTab === 'profile' && (
-          <div className="space-y-6 animate-in fade-in duration-300">
+          <div className="space-y-6">
             <h1 className="text-2xl font-black uppercase tracking-wide text-white mb-6">{t.profile}</h1>
 
             <div className="mb-8">
@@ -218,9 +225,6 @@ const App = () => {
               <div className="flex flex-wrap gap-2">
                 <LangBtn id="en" flag="🇺🇸" label="EN" />
                 <LangBtn id="ru" flag="🇷🇺" label="RU" />
-                <LangBtn id="ua" flag="🇺🇦" label="UA" />
-                <LangBtn id="kr" flag="🇰🇷" label="한국" />
-                <LangBtn id="zh" flag="🇨🇳" label="繁體" />
               </div>
             </div>
 
@@ -246,21 +250,12 @@ const App = () => {
                 {t.invite}
               </button>
             </div>
-
-            <div className="flex space-x-3 pb-8">
-              <button className="flex-1 bg-[#111] border border-white/5 hover:border-white/20 text-gray-400 hover:text-white font-bold text-xs py-4 rounded-2xl transition uppercase tracking-widest">
-                {t.privacy}
-              </button>
-              <button className="flex-1 bg-[#111] border border-white/5 hover:border-white/20 text-gray-400 hover:text-white font-bold text-xs py-4 rounded-2xl transition uppercase tracking-widest">
-                {t.contact}
-              </button>
-            </div>
           </div>
         )}
 
       </main>
 
-      {/* ================= ОВАЛЬНАЯ НАВИГАЦИЯ ================= */}
+      {/* --- НАВИГАЦИЯ --- */}
       <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[85%] max-w-sm bg-[#111111]/80 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] px-2 py-2 z-50 shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
         <div className="flex justify-between items-center">
           <NavBtn id="arena" icon={<Target size={22} />} label="Arena" />
