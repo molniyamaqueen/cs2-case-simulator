@@ -11,7 +11,7 @@
       body, html {
         margin: 0;
         padding: 0;
-        background-color: #0a0a0c;
+        background-color: #000000; /* Глубокий черный под наш Black Edition */
         height: 100%;
         font-family: system-ui, -apple-system, sans-serif;
       }
@@ -19,78 +19,10 @@
       #root {
         height: 100%;
       }
-
-      .cs-loader-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-      }
-      
-      .cs-logo {
-        width: 70px;
-        height: 70px;
-        background-color: #f97316;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 28px;
-        font-weight: 900;
-        color: #000;
-        margin-bottom: 24px;
-        animation: pulse 1.5s infinite;
-      }
-      .cs-text {
-        font-size: 12px;
-        font-weight: bold;
-        color: #6b7280;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-      }
-      .cs-progress {
-        width: 180px;
-        height: 4px;
-        background-color: #1f2937;
-        border-radius: 4px;
-        margin-top: 20px;
-        overflow: hidden;
-        position: relative;
-      }
-      .cs-bar {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 30%;
-        background-color: #f97316;
-        animation: loading 1.5s infinite ease-in-out;
-        border-radius: 4px;
-      }
-      @keyframes pulse {
-        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.5); }
-        70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(249, 115, 22, 0); }
-        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
-      }
-      @keyframes loading {
-        0% { left: -30%; width: 30%; }
-        50% { width: 50%; }
-        100% { left: 100%; width: 30%; }
-      }
     </style>
   </head>
   <body>
-    
-    <div id="root">
-      <div class="cs-loader-container">
-        <div class="cs-logo">CS</div>
-        <div class="cs-text">Connecting to Server...</div>
-        <div class="cs-progress">
-          <div class="cs-bar"></div>
-        </div>
-      </div>
-    </div>
+    <div id="root"></div>
     
     <script type="module" src="/src/main.jsx"></script>
   </body>
