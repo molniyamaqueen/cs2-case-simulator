@@ -9,22 +9,29 @@
       body, html {
         margin: 0;
         padding: 0;
-        background-color: #0a0a0c; /* Наш фирменный черный цвет */
+        background-color: #0a0a0c;
         height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         font-family: system-ui, -apple-system, sans-serif;
       }
-      .cs-loader {
+      
+      /* Задаем высоту корневому элементу, чтобы приложение развернулось */
+      #root {
+        height: 100%;
+      }
+
+      /* Центрируем ТОЛЬКО лоадер, не трогая само приложение */
+      .cs-loader-container {
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
+        height: 100vh;
       }
+      
       .cs-logo {
         width: 70px;
         height: 70px;
-        background-color: #f97316; /* Оранжевый CS */
+        background-color: #f97316;
         border-radius: 16px;
         display: flex;
         align-items: center;
@@ -61,13 +68,11 @@
         animation: loading 1.5s infinite ease-in-out;
         border-radius: 4px;
       }
-      /* Анимация пульсации логотипа */
       @keyframes pulse {
         0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.5); }
         70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(249, 115, 22, 0); }
         100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
       }
-      /* Анимация бегающей полосы */
       @keyframes loading {
         0% { left: -30%; width: 30%; }
         50% { width: 50%; }
@@ -78,15 +83,13 @@
   <body>
     
     <div id="root">
-      
-      <div class="cs-loader">
+      <div class="cs-loader-container">
         <div class="cs-logo">CS</div>
         <div class="cs-text">Connecting to Server...</div>
         <div class="cs-progress">
           <div class="cs-bar"></div>
         </div>
       </div>
-      
     </div>
     
     <script type="module" src="/src/main.jsx"></script>
