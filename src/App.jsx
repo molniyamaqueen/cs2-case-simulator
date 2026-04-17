@@ -27,22 +27,6 @@ const App = () => {
     }
   }, []);
 
-  // Компонент нижней кнопки навигации
-  const NavButton = ({ id, icon, label }) => {
-    const isActive = activeTab === id;
-    return (
-      <button 
-        onClick={() => setActiveTab(id)}
-        className={`flex flex-col items-center justify-center w-full space-y-1 transition-colors ${
-          isActive ? 'text-orange-500' : 'text-gray-500 hover:text-gray-300'
-        }`}
-      >
-        {React.cloneElement(icon, { size: 24, className: isActive ? 'drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]' : '' })}
-        <span className="text-[10px] font-bold uppercase tracking-wider">{label}</span>
-      </button>
-    );
-  };
-
   // Формируем имя для отображения
   const displayName = tgUser?.firstName || 'Agent';
   const displayUsername = tgUser?.username ? `@${tgUser.username}` : 'Classified';
@@ -116,13 +100,12 @@ const App = () => {
           </div>
         )}
 
-        {/* ЭКРАН ПРОФИЛЯ (ТЕПЕРЬ ЖИВОЙ!) */}
+        {/* ЭКРАН ПРОФИЛЯ */}
         {activeTab === 'profile' && (
           <div className="space-y-4 animate-in fade-in duration-300">
             <div className="bg-[#15151a] p-4 rounded-2xl flex items-center justify-between border border-white/5">
               <div className="flex items-center space-x-3">
                 <div className="w-14 h-14 bg-gradient-to-tr from-orange-500 to-yellow-500 rounded-xl p-0.5 overflow-hidden">
-                  {/* Если есть фото из ТГ - показываем его, иначе иконку */}
                   {tgUser?.photoUrl ? (
                     <img src={tgUser.photoUrl} alt="Profile" className="w-full h-full rounded-[10px] object-cover" />
                   ) : (
@@ -132,7 +115,6 @@ const App = () => {
                   )}
                 </div>
                 <div>
-                  {/* Подставляем реальное имя и ник */}
                   <h2 className="font-bold text-lg">{displayName}</h2>
                   <span className="text-[10px] text-gray-400 uppercase tracking-wider">{displayUsername}</span>
                 </div>
@@ -171,83 +153,58 @@ const App = () => {
 
       </main>
 
-      {/* BOTTOM NAVIGATION */}
-      <nav className="fixed bottom-0 w-full bg-[#111115]/95 backdrop-blur-xl border-t border-white/5 pb-safe pt-2 px-2 z-50">
-        <div className="flex justify-between items-center max-w-md mx-auto px-2 mb-2">
-          <NavButton id="signals" icon={<Target />} label="Signals" />
-          <NavButton id="news" icon={<BookOpen />} label="Hub" />
-          <NavButton id="games" icon={<Gamepad2 />} label="Games" />
-          <NavButton id="profile" icon={<User />} label="Profile" />
-        </div>
-      </nav>
-
-    </div>
-  );
-};
-
-export default App;
-import React, { useState } from 'react';
-import { Gamepad2, Store, Gift } from 'lucide-react';
-
-const App = () => {
-  const [activeTab, setActiveTab] = useState('games');
-
-  return (
-    <div className="flex flex-col h-screen bg-[#0a0a0c] text-white font-sans overflow-hidden">
-      
-      {/* ВРЕМЕННАЯ ЗАГЛУШКА КОНТЕНТА */}
-      <main className="flex-1 flex items-center justify-center pb-24">
-        <div className="text-gray-600 font-bold tracking-widest uppercase">
-          Экран: {activeTab}
-        </div>
-      </main>
-
-      {/* ИДЕАЛЬНАЯ НИЖНЯЯ ПАНЕЛЬ (ПО СКРИНУ) */}
+      {/* НОВАЯ ИДЕАЛЬНАЯ НИЖНЯЯ ПАНЕЛЬ ПО СКРИНУ */}
       <nav className="fixed bottom-0 w-full bg-[#111115] border-t border-white/5 pb-safe pt-2 px-2 z-50">
         <div className="flex justify-around items-center max-w-md mx-auto mb-2">
 
-          {/* 1. Market */}
+          {/* 1. Signals */}
           <button
-            onClick={() => setActiveTab('market')}
+            onClick={() => setActiveTab('signals')}
             className={`flex flex-col items-center justify-center w-[75px] py-2 rounded-[20px] transition-all duration-300 ${
-              activeTab === 'market' ? 'bg-[#1c1c22]' : ''
+              activeTab === 'signals' ? 'bg-[#1c1c22]' : ''
             }`}
           >
-            <Store size={24} className={activeTab === 'market' ? 'text-purple-500' : 'text-gray-500'} />
-            <span className={`text-[10px] mt-1 font-bold ${activeTab === 'market' ? 'text-purple-500' : 'text-gray-500'}`}>Market</span>
+            <Target size={24} className={activeTab === 'signals' ? 'text-orange-500' : 'text-gray-500'} />
+            <span className={`text-[10px] mt-1 font-bold ${activeTab === 'signals' ? 'text-orange-500' : 'text-gray-500'}`}>Signals</span>
           </button>
 
-          {/* 2. Games */}
+          {/* 2. Hub */}
+          <button
+            onClick={() => setActiveTab('news')}
+            className={`flex flex-col items-center justify-center w-[75px] py-2 rounded-[20px] transition-all duration-300 ${
+              activeTab === 'news' ? 'bg-[#1c1c22]' : ''
+            }`}
+          >
+            <BookOpen size={24} className={activeTab === 'news' ? 'text-orange-500' : 'text-gray-500'} />
+            <span className={`text-[10px] mt-1 font-bold ${activeTab === 'news' ? 'text-orange-500' : 'text-gray-500'}`}>Hub</span>
+          </button>
+
+          {/* 3. Games */}
           <button
             onClick={() => setActiveTab('games')}
             className={`flex flex-col items-center justify-center w-[75px] py-2 rounded-[20px] transition-all duration-300 ${
               activeTab === 'games' ? 'bg-[#1c1c22]' : ''
             }`}
           >
-            <Gamepad2 size={24} className={activeTab === 'games' ? 'text-purple-500' : 'text-gray-500'} />
-            <span className={`text-[10px] mt-1 font-bold ${activeTab === 'games' ? 'text-purple-500' : 'text-gray-500'}`}>Games</span>
+            <Gamepad2 size={24} className={activeTab === 'games' ? 'text-orange-500' : 'text-gray-500'} />
+            <span className={`text-[10px] mt-1 font-bold ${activeTab === 'games' ? 'text-orange-500' : 'text-gray-500'}`}>Games</span>
           </button>
 
-          {/* 3. My gifts */}
-          <button
-            onClick={() => setActiveTab('gifts')}
-            className={`flex flex-col items-center justify-center w-[75px] py-2 rounded-[20px] transition-all duration-300 ${
-              activeTab === 'gifts' ? 'bg-[#1c1c22]' : ''
-            }`}
-          >
-            <Gift size={24} className={activeTab === 'gifts' ? 'text-purple-500' : 'text-gray-500'} />
-            <span className={`text-[10px] mt-1 font-bold ${activeTab === 'gifts' ? 'text-purple-500' : 'text-gray-500'}`}>My gifts</span>
-          </button>
-
-          {/* 4. Avatar (Профиль) */}
+          {/* 4. Profile (Круглая аватарка как на фото!) */}
           <button
             onClick={() => setActiveTab('profile')}
             className="flex flex-col items-center justify-center w-[75px] py-1 transition-all"
           >
             <div className={`w-9 h-9 rounded-full overflow-hidden border-2 transition-all duration-300 ${
-              activeTab === 'profile' ? 'border-purple-500' : 'border-transparent'
+              activeTab === 'profile' ? 'border-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]' : 'border-transparent'
             }`}>
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=CS2" alt="Profile" className="w-full h-full object-cover bg-zinc-800" />
+              {tgUser?.photoUrl ? (
+                 <img src={tgUser.photoUrl} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                 <div className="w-full h-full bg-zinc-800 flex items-center justify-center text-gray-400">
+                    <User size={20} />
+                 </div>
+              )}
             </div>
           </button>
 
