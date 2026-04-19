@@ -93,3 +93,146 @@ const App = () => {
 };
 
 export default App;
+
+import { useState, useEffect } from 'react';
+import './index.css';
+
+export default function App() {
+  const [activeScreen, setActiveScreen] = useState('market');
+  const [isPro, setIsPro] = useState(false);
+  const [userId, setUserId] = useState('000000');
+  const [aiReport, setAiReport] = useState('');
+
+  // Инициализация Telegram Web App
+  useEffect(() => {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    const uid = tg.initDataUnsafe?.user?.id || '777888';
+    setUserId(uid);
+
+    // Проверяем статус из ссылки (для теста можно поставить true)
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('status') === 'pro') {
+      setIsPro(true);
+    }
+  }, []);
+
+  const triggerHaptic = (style = 'light') => {
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+      window.Telegram.WebApp.HapticFeedback.impactOccurred(style);
+    }
+  };
+
+  const navTo = (screen) => {
+    triggerHaptic('light');
+    setActiveScreen(screen);
+  };
+
+  const handleAiScan = (e) => {
+    if (e.key === 'Enter') {
+      triggerHaptic('medium');
+      setAiReport('📡 Analyzing neural paths...');
+      setTimeout(() => {
+        setAiReport(`✅ ${e.target.value}: Потенциал +${(Math.random() * 12).toFixed(1)}% ROI в течение 48ч.`);
+      }, 1000);
+    }
+  };
+
+  return (
+    <div className="app-container">
+      {/* SCREEN: MARKET */}
+      <div className={`screen ${activeScreen === 'market' ? 'active' : ''}`}>
+        <div className="header-flex">
+          <span>TERMINAL V5.0</span>
+          <span className="online-status">ONLINE 🟢</span>
+        </div>
+        
+        <div className="card ai-box">
+          <div className="ai-title">AI ANALYZER PRO</div>
+          <input 
+            type="text" 
+            placeholder={isPro ? "Название скина..." : "💎 Доступно только для PRO"} 
+            onKeyDown={handleAiScan}
+            disabled={!isPro}
+          />
+          {aiReport && <div className="ai-report">{aiReport}</div>}
+        </div>
+
+        <div className="market-list">
+          <div className="card item-card covert">
+            <span className="badge">COVERT</span>
+            <b>M4A1-S | Printstream</b>
+            <div className="price">$142.10</div>
+          </div>
+          <div className="card item-card rare">
+            <span className="badge">RARE</span>
+            <b>AK-47 | Slate</b>
+            <div className="price">$4.50</div>
+          </div>
+        </div>
+      </div>
+
+      {/* SCREEN: NEWS */}
+      <div className={`screen ${activeScreen === 'news' ? 'active' : ''}`}>
+        <div className="header-flex" style={{ color: 'var(--blue)' }}>
+          <span>MARKET INSIDER</span>
+          <span className="online-status">AUTO-SYNC</span>
+        </div>
+        
+        <div className="card signals-box">
+          <div className="signals-title">🎯 СИГНАЛЫ ДНЯ (TOP ROI)</div>
+          <div className="signal-item">🔥 AK-47 | Ice Coaled (FN) {'->'} <span className="profit">+14%</span></div>
+          <div className="signal-item">📈 Desert Eagle | Printstream {'->'} <span className="profit">+8%</span></div>
+        </div>
+
+        <div className="card news-item">
+          <div className="news-date">TODAY <span className="news-tag">HOT</span></div>
+          <b>Обновление алгоритмов Buff163</b>
+          <p>AI теперь точнее предсказывает падение цен на кейсы после 18:00 по МСК.</p>
+        </div>
+      </div>
+
+      {/* SCREEN: PROFILE & EARN */}
+      <div className={`screen ${activeScreen === 'profile' ? 'active' : ''}`}>
+        <div className="card profile-header">
+          <div className="avatar">👤</div>
+          <h2 style={{ color: isPro ? 'var(--gold)' : '#fff' }}>
+            {isPro ? 'PRIME PRO' : 'FREE MEMBER'}
+          </h2>
+          <p className="user-id">ID: #{userId}</p>
+        </div>
+        
+        <div className="card">
+          <h4>EARN REWARDS (ЗАДАНИЯ)</h4>
+          <div className="task-row">
+            <div>
+              <b>Subscribe to Channel</b><br/>
+              <span className="profit">+500 Points</span>
+            </div>
+            <button className="btn-go">GO</button>
+          </div>
+        </div>
+
+        <div className="card">
+          <h4>INVITE SYSTEM</h4>
+          <div className="ref-link">t.me/cs_pro_bot?start={userId}</div>
+        </div>
+      </div>
+
+      {/* BOTTOM NAV */}
+      <nav className="nav-bar">
+        <div className={`nav-item ${activeScreen === 'market' ? 'active' : ''}`} onClick={() => navTo('market')}>
+          <span className="nav-icon">📊</span>MARKET
+        </div>
+        <div className={`nav-item ${activeScreen === 'news' ? 'active' : ''}`} onClick={() => navTo('news')}>
+          <span className="nav-icon">🗞</span>NEWS
+        </div>
+        <div className={`nav-item ${activeScreen === 'profile' ? 'active' : ''}`} onClick={() => navTo('profile')}>
+          <span className="nav-icon">👤</span>PROFILE
+        </div>
+      </nav>
+    </div>
+  );
+}
