@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy, Timer } from 'lucide-react';
-// 1. Подключаем хук языков
 import { useLanguage } from '../i18n/LanguageContext';
 
 const Games = () => {
-  // 2. Достаем функцию перевода
   const { t } = useLanguage();
   const [timeLeft, setTimeLeft] = useState(30);
 
-  // Таймер раунда (30 сек)
   useEffect(() => {
     if (timeLeft <= 0) return;
     const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
@@ -23,7 +20,6 @@ const Games = () => {
 
   return (
     <div className="px-6 pt-4 animate-in fade-in duration-700 pb-32">
-      {/* ВЕРХНЯЯ СТАТИСТИКА */}
       <div className="flex gap-4 mb-6">
         <div className="flex-1 bg-[#111112] border border-white/5 rounded-[24px] p-4 text-center">
           <p className="text-[9px] font-black text-zinc-600 uppercase mb-1">{t('max_win')}</p>
@@ -35,9 +31,7 @@ const Games = () => {
         </div>
       </div>
 
-      {/* ГЛАВНЫЙ ЭКРАН РУЛЕТКИ */}
       <div className="relative w-full aspect-square max-h-[340px] bg-[#111112] rounded-[40px] border border-white/10 overflow-hidden shadow-2xl mb-8">
-        {/* Хедер внутри квадрата */}
         <div className="absolute top-5 left-6 flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
           <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 italic">{t('live_round')}</span>
@@ -47,7 +41,6 @@ const Games = () => {
           <span className="text-[11px] font-black italic">{timeLeft}s</span>
         </div>
 
-        {/* БАРАБАН */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-48 h-48 rounded-full border-[10px] border-white/5 flex items-center justify-center relative">
             <div className="absolute inset-0 rounded-full border-t-[10px] border-purple-500 animate-[spin_3s_linear_infinite]" />
@@ -59,7 +52,6 @@ const Games = () => {
         </div>
       </div>
 
-      {/* СПИСОК ИГРОКОВ */}
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-black italic">{t('players')} <span className="text-zinc-700 ml-1">{players.length}</span></h3>
         <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">{t('game')} #77200</p>
