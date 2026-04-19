@@ -1,3 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  background-color: #000;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  display: flex;
+  justify-content: center; /* Центрируем всё приложение */
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  max-width: 400px; /* Идеальная ширина под iPhone 15 */
+  min-height: 100vh;
+  background-color: #000;
+  position: relative;
+  border-left: 1px solid rgba(255,255,255,0.05); /* Еле заметные границы для десктопа */
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Скрываем скроллбар, чтобы было как в нативном приложении */
+::-webkit-scrollbar {
+  display: none;
+}
