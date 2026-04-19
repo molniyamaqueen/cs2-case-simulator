@@ -24,39 +24,43 @@ const App = () => {
     } catch (e) {}
   }, []);
 
-  const NavItem = ({ id, label, icon, isAvatar }) => {
+  const NavItem = ({ id, label, icon, activeColor, isAvatar }) => {
     const isActive = activeTab === id;
 
+    // Аватарка (круг справа)
+    if (isAvatar) {
+      return (
+        <button
+          onClick={() => { setActiveTab(id); triggerHaptic(); }}
+          className={`w-11 h-11 rounded-full overflow-hidden shrink-0 ml-1 border-2 transition-colors duration-300 ${
+            isActive ? 'border-[#d946ef]' : 'border-transparent'
+          }`}
+        >
+          <img 
+            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100" 
+            alt="Profile" 
+            className="w-full h-full object-cover" 
+          />
+        </button>
+      );
+    }
+
+    // Обычные кнопки (как на скрине)
     return (
       <button
         onClick={() => { setActiveTab(id); triggerHaptic(); }}
-        // Размеры и скругления СТРОГО как в дорогом интерфейсе
-        className={`relative flex flex-col items-center justify-center w-[76px] h-[58px] rounded-[24px] transition-all duration-200 ${
-          isActive && !isAvatar ? 'bg-[#2c2c2e]' : 'bg-transparent'
+        className={`relative flex flex-col items-center justify-center h-[52px] min-w-[72px] px-3 rounded-full transition-all duration-300 ${
+          isActive ? 'bg-black shadow-[inset_0_1px_3px_rgba(255,255,255,0.05)]' : 'bg-transparent'
         }`}
+        style={{ color: isActive ? activeColor : '#8e8e93' }}
       >
-        {isAvatar ? (
-          <div className="w-[32px] h-[32px] rounded-full overflow-hidden">
-            <img 
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100" 
-              alt="Profile" 
-              className="w-full h-full object-cover" 
-            />
-          </div>
-        ) : (
-          <>
-            <div className={`mb-1 transition-colors duration-200 ${isActive ? 'text-white' : 'text-[#8e8e93]'}`}>
-              {/* Делаем линии иконки чуть плотнее */}
-              {React.cloneElement(icon, { size: 24, strokeWidth: isActive ? 2.5 : 2 })}
-            </div>
-            
-            <span className={`text-[10px] font-medium tracking-wide transition-colors duration-200 ${
-              isActive ? 'text-white' : 'text-[#8e8e93]'
-            }`}>
-              {label}
-            </span>
-          </>
-        )}
+        <div className="mb-0.5">
+          {React.cloneElement(icon, { size: 22, strokeWidth: isActive ? 2.5 : 2 })}
+        </div>
+        
+        <span className="text-[11px] font-medium tracking-wide">
+          {label}
+        </span>
       </button>
     );
   };
@@ -64,18 +68,18 @@ const App = () => {
   return (
     <div className="flex flex-col h-screen bg-[#000000] text-white overflow-hidden font-sans">
       
-      {/* Рабочая зона */}
+      {/* РАБОЧАЯ ЗОНА */}
       <main className="flex-1 flex items-center justify-center">
-         <p className="text-[#2c2c2e] font-bold text-xs tracking-widest uppercase">{activeTab} SCREEN IS EMPTY</p>
+         <p className="text-[#2c2c2e] font-bold text-xs tracking-widest uppercase">{activeTab} SCREEN</p>
       </main>
 
-      {/* Навигация 1 в 1 как в Portals */}
-      <div className="fixed bottom-6 w-full flex justify-center z-50">
-        <nav className="w-[92%] max-w-[380px] bg-[#1c1c1e] rounded-[32px] p-1.5 flex justify-between items-center shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
+      {/* НАВИГАЦИЯ (Строго по скрину) */}
+      <div className="fixed bottom-6 w-full flex justify-center z-50 px-4">
+        <nav className="w-full max-w-[380px] bg-[#1c1c1e] rounded-full p-1.5 flex justify-between items-center shadow-2xl">
           
-          <NavItem id="market" label="Market" icon={<Store />} />
-          <NavItem id="games" label="Games" icon={<Gamepad2 />} />
-          <NavItem id="gifts" label="My gifts" icon={<Gift />} />
+          <NavItem id="market" label="Market" icon={<Store />} activeColor="#ffffff" />
+          <NavItem id="games" label="Games" icon={<Gamepad2 />} activeColor="#d946ef" />
+          <NavItem id="gifts" label="My gifts" icon={<Gift />} activeColor="#ffffff" />
           <NavItem id="profile" isAvatar={true} />
 
         </nav>
