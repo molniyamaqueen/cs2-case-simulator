@@ -3,30 +3,49 @@
 @tailwind utilities;
 
 :root {
-  background-color: #000;
+  --bg-black: #000000;
+  --card-gray: #1c1c1e;
+  --accent-blue: #00d2ff;
+  --accent-green: #00ffcc;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #000;
-  display: flex;
-  justify-content: center; /* Центрируем всё приложение */
-  min-height: 100vh;
-  overflow-x: hidden;
+  background-color: var(--bg-black);
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden; /* Запрещаем случайный скролл всей страницы */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-#root {
-  width: 100%;
-  max-width: 400px; /* Идеальная ширина под iPhone 15 */
-  min-height: 100vh;
-  background-color: #000;
-  position: relative;
-  border-left: 1px solid rgba(255,255,255,0.05); /* Еле заметные границы для десктопа */
-  border-right: 1px solid rgba(255,255,255,0.05);
+/* Эффект матового стекла для карточек */
+.glass-card {
+  background: rgba(28, 28, 30, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Скрываем скроллбар, чтобы было как в нативном приложении */
-::-webkit-scrollbar {
+/* Плавный скролл только для контента */
+.scroll-container {
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scroll-container::-webkit-scrollbar {
   display: none;
+}
+
+/* Анимация пульсации для статуса Live */
+.pulse-emerald {
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
