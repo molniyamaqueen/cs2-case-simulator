@@ -27,13 +27,13 @@ const App = () => {
   const NavItem = ({ id, label, icon, activeColor, isAvatar }) => {
     const isActive = activeTab === id;
 
-    // Аватарка (круг справа)
+    // Аватарка (крупнее и ближе к краю, как на скрине)
     if (isAvatar) {
       return (
         <button
           onClick={() => { setActiveTab(id); triggerHaptic(); }}
-          className={`w-11 h-11 rounded-full overflow-hidden shrink-0 ml-1 border-2 transition-colors duration-300 ${
-            isActive ? 'border-[#d946ef]' : 'border-transparent'
+          className={`w-[46px] h-[46px] rounded-full overflow-hidden shrink-0 ml-1 transition-all duration-300 ${
+            isActive ? 'ring-2 ring-white/20' : 'ring-0 opacity-90'
           }`}
         >
           <img 
@@ -45,20 +45,24 @@ const App = () => {
       );
     }
 
-    // Обычные кнопки (как на скрине)
+    // Идеально выверенные кнопки 1 в 1
     return (
       <button
         onClick={() => { setActiveTab(id); triggerHaptic(); }}
-        className={`relative flex flex-col items-center justify-center h-[52px] min-w-[72px] px-3 rounded-full transition-all duration-300 ${
-          isActive ? 'bg-black shadow-[inset_0_1px_3px_rgba(255,255,255,0.05)]' : 'bg-transparent'
+        // Широкая таблетка (w-[82px] h-[54px]) с эффектом вжатости
+        className={`relative flex flex-col items-center justify-center h-[54px] w-[82px] rounded-[26px] transition-all duration-300 ${
+          isActive 
+            ? 'bg-[#000000] shadow-[inset_0_2px_8px_rgba(0,0,0,0.8)] border border-white/[0.02]' 
+            : 'bg-transparent'
         }`}
-        style={{ color: isActive ? activeColor : '#8e8e93' }}
+        style={{ color: isActive ? activeColor : '#6e6e73' }} // #6e6e73 - цвет неактивного текста как на референсе
       >
-        <div className="mb-0.5">
+        <div className={`mb-0.5 transition-transform duration-300 ${isActive ? 'scale-105' : 'scale-100'}`}>
+          {/* Делаем иконку чуть плотнее */}
           {React.cloneElement(icon, { size: 22, strokeWidth: isActive ? 2.5 : 2 })}
         </div>
         
-        <span className="text-[11px] font-medium tracking-wide">
+        <span className="text-[10px] font-semibold tracking-[0.02em]">
           {label}
         </span>
       </button>
@@ -70,15 +74,15 @@ const App = () => {
       
       {/* РАБОЧАЯ ЗОНА */}
       <main className="flex-1 flex items-center justify-center">
-         <p className="text-[#2c2c2e] font-bold text-xs tracking-widest uppercase">{activeTab} SCREEN</p>
+         <p className="text-[#18181a] font-black text-2xl tracking-widest uppercase">{activeTab}</p>
       </main>
 
-      {/* НАВИГАЦИЯ (Строго по скрину) */}
+      {/* НАВИГАЦИЯ (Идеальный клон) */}
       <div className="fixed bottom-6 w-full flex justify-center z-50 px-4">
-        <nav className="w-full max-w-[380px] bg-[#1c1c1e] rounded-full p-1.5 flex justify-between items-center shadow-2xl">
+        <nav className="w-full max-w-[390px] bg-[#18181a] rounded-[34px] p-1.5 flex justify-between items-center border border-white/[0.04] shadow-[0_20px_40px_rgba(0,0,0,0.6)]">
           
           <NavItem id="market" label="Market" icon={<Store />} activeColor="#ffffff" />
-          <NavItem id="games" label="Games" icon={<Gamepad2 />} activeColor="#d946ef" />
+          <NavItem id="games" label="Games" icon={<Gamepad2 />} activeColor="#c061ff" /> {/* Оригинальный фиолетовый из Portals */}
           <NavItem id="gifts" label="My gifts" icon={<Gift />} activeColor="#ffffff" />
           <NavItem id="profile" isAvatar={true} />
 
