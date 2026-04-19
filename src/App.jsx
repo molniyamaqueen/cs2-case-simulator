@@ -1,78 +1,117 @@
-import React, { useState } from 'react';
-import { Store, Gamepad2, Gift } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Target, Crosshair, Search, Target as TargetIcon } from 'lucide-react';
 
 const App = () => {
-  const [activeTab, setActiveTab] = useState('games');
+  // По умолчанию активен Hub
+  const [activeTab, setActiveTab] = useState('hub');
 
-  const triggerHaptic = () => {
+  // Вибрация
+  const triggerHaptic = (style = 'light') => {
     try {
       if (window.Telegram?.WebApp?.HapticFeedback) {
-        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+        window.Telegram.WebApp.HapticFeedback.impactOccurred(style);
       }
     } catch (e) {}
   };
 
-  const NavItem = ({ id, icon, label, isAvatar }) => {
+  useEffect(() => {
+    try {
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+        if (window.Telegram.WebApp.setHeaderColor) {
+            window.Telegram.WebApp.setHeaderColor('#000000');
+        }
+      }
+    } catch (e) {}
+  }, []);
+
+  // Компонент одной кнопки (СТРОГО по image_1.png)
+  const NavItem = ({ id, label, icon, isAvatar }) => {
     const isActive = activeTab === id;
 
     return (
       <button
-        onClick={() => { setActiveTab(id); triggerHaptic(); }}
-        className="relative flex flex-col items-center justify-center w-[76px] h-[52px] transition-all duration-300"
+        onClick={() => { setActiveTab(id); triggerHaptic('light'); }}
+        className={`relative flex flex-col items-center justify-center p-3 transition-all duration-300 ${
+          isActive && !isAvatar ? 'text-white' : 'text-gray-500'
+        }`}
       >
-        {/* ЭФФЕКТ ВЖАТОЙ КАПСУЛЫ (ЛУНКА) */}
+        {/* АКТИВНЫЙ ФОН - ПЛАШКА (Как на скрине image_1.png) */}
         {isActive && !isAvatar && (
-          <div className="absolute inset-0 rounded-full 
-            bg-[#0d0d0f] 
-            shadow-[inset_6px_6px_12px_rgba(0,0,0,0.8),inset_-2px_-2px_6px_rgba(255,255,255,0.03)] 
-            border-[0.5px] border-white/5" 
-          />
+          <div className="absolute inset-0 bg-white/5 border border-white/10 rounded-2xl -z-10 shadow-[0_0_15px_rgba(255,255,255,0.1)]" />
         )}
 
-        <div className={`relative z-10 flex flex-col items-center transition-all duration-500 ${isActive ? 'scale-90 translate-y-[1px]' : 'text-[#4c4c50]'}`}>
-          {isAvatar ? (
-             <div className={`w-8 h-8 rounded-full overflow-hidden border-2 transition-all ${isActive ? 'border-white/20' : 'border-transparent opacity-60'}`}>
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="P" className="w-full h-full object-cover" />
-             </div>
-          ) : (
-            <>
-              <div className={`transition-colors duration-300 ${isActive ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]' : ''}`}>
-                {icon}
-              </div>
-              <span className={`text-[9px] font-bold uppercase tracking-tight mt-1 transition-all ${isActive ? 'text-white opacity-100' : 'opacity-60'}`}>
-                {label}
-              </span>
-            </>
-          )}
-        </div>
+        {isAvatar ? (
+          // Круглая аватарка Профиля (Как на скрине image_1.png)
+          <div className={`w-9 h-9 rounded-full overflow-hidden border-2 transition-colors ${
+            isActive ? 'border-white/50' : 'border-gray-700 opacity-60'
+          }`}>
+            <img 
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100" 
+              alt="P" 
+              className="w-full h-full object-cover" 
+            />
+          </div>
+        ) : (
+          // Иконка + Текст (Как на скрине image_1.png)
+          <>
+            <div className={`mb-1 transition-transform ${isActive ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]' : 'scale-100'}`}>
+              {icon}
+            </div>
+            <span className={`text-[10px] font-bold uppercase tracking-tight ${isActive ? 'opacity-100' : 'opacity-80'}`}>{label}</span>
+          </>
+        )}
       </button>
     );
   };
 
   return (
-    <div className="flex flex-col h-screen bg-black text-white overflow-hidden">
+    <div className="flex flex-col h-screen bg-[#000000] text-white overflow-hidden font-sans">
       
-      {/* ПУСТАЯ РАБОЧАЯ ЗОНА */}
-      <main className="flex-1 overflow-y-auto pb-28 px-4 pt-6">
-        <div className="flex h-full items-center justify-center text-[#2a2a2d] font-black uppercase tracking-[0.3em] text-[10px]">
-          {activeTab} module active
+      {/* ПУСТАЯ РАБОЧАЯ ЗОНА (Основа) */}
+      <main className="flex-1 overflow-y-auto pb-32 pt-8 px-5 animate-in fade-in duration-500">
+        <div className="flex flex-col h-full items-center justify-center text-center">
+            <h2 className="text-4xl font-black uppercase tracking-widest text-[#1a1a1c] mb-2">{activeTab}</h2>
+            <p className="text-xs font-bold text-gray-700 tracking-wider">MODUL IS EMPTY</p>
         </div>
       </main>
 
-      {/* ГЛАВНАЯ ПАНЕЛЬ (КОРПУС) */}
-      <nav className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[92%] max-w-sm 
-        bg-[#18181b] 
-        rounded-[32px] 
-        px-3 py-2 
+      {/* ОВАЛЬНАЯ НАВИГАЦИЯ (Строго по image_1.png + ТЗ) */}
+      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-sm 
+        bg-[#1a1a1c]/90 
+        backdrop-blur-2xl 
+        border border-white/5 
+        rounded-full 
+        px-2 py-1 
         z-50 
-        border border-white/[0.03]
-        shadow-[0_25px_50px_-12px_rgba(0,0,0,0.9)]">
+        shadow-[0_15px_30px_rgba(0,0,0,0.6)]">
         
-        <div className="flex justify-between items-center">
-          <NavItem id="market" icon={<Store size={20} />} label="Market" />
-          <NavItem id="games" icon={<Gamepad2 size={20} className={activeTab === 'games' ? 'text-[#e879f9]' : ''} />} label="Games" />
-          <NavItem id="gifts" icon={<Gift size={20} />} label="My gifts" />
-          <NavItem id="profile" isAvatar={true} label="Profile" />
+        <div className="flex justify-between items-center px-2">
+          
+          <NavItem 
+            id="arena" 
+            label="Arena" 
+            icon={<Crosshair size={22} />} 
+          />
+          
+          <NavItem 
+            id="hub" 
+            label="Hub" 
+            icon={<Target size={22} />} 
+          />
+          
+          <NavItem 
+            id="intel" 
+            label="Intel" 
+            icon={<Search size={22} />} 
+          />
+          
+          <NavItem 
+            id="profile" 
+            isAvatar={true}
+          />
+
         </div>
       </nav>
 
