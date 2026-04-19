@@ -1,72 +1,116 @@
 import React, { useState } from 'react';
-import { Sparkles, Zap, Target, X } from 'lucide-react';
+import { Sparkles, Zap, Target, Search, X, BookOpen } from 'lucide-react';
 
 const Hub = () => {
   const [hubSection, setHubSection] = useState('signals');
-  const [aiResponse, setAiResponse] = useState(null);
+  const [aiInput, setAiInput] = useState('');
+  const [guideModal, setGuideModal] = useState(null); // Состояние для модалки Гайда
 
-  const askAI = (type) => {
-    const responses = {
-      'Green Set': "Emerald Web + Gamma Doppler Phase 2 + Hedge Maze. Price: $4,200. Status: Trending.",
-      'Red-Black': "Crimson Web + Slaughter + Tiger Tooth accents. Aggressive style. Status: Stable.",
-      'Budget Loadout': "Slate AK + Safari Mesh AWP + Glock High Beam. Under $15. Status: Popular.",
-      'Pro Meta': "G2 NiKo's current set: Deagle Blaze + AK-47 Wild Lotus. Status: High Tier."
-    };
-    setAiResponse({ title: type, text: responses[type] });
+  // База знаний для Guide
+  const guideData = {
+    'Aim': { title: "Aim Mastery", text: "Crosshair placement is 90% of your aim. Always keep your crosshair at head level and pre-aim common angles. Download Yprac maps from the workshop." },
+    'Picks': { title: "Entry Picks", text: "Don't peek dry. Use flashes. If you are playing entry fragger, your goal is to create space. Communicate your path to the second man in." },
+    'Nades': { title: "Better Раскидка", text: "Learn jumpthrow binds (128 tick). Essential smokes: Mirage Window, Inferno Coffins, Dust2 Xbox. One good smoke wins the round." },
+    'Economy': { title: "Economy Rules", text: "Loss bonus starts at $1400. If your team has under $2000, FULL ECO. Don't buy a Deagle if it breaks your next round full buy ($4300 minimum)." }
+  };
+
+  const handleAiSearch = (e) => {
+    e.preventDefault();
+    if(!aiInput) return;
+    try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('medium'); } catch (e) {}
+    setAiInput(''); // В реальности тут был бы запрос к бэкенду
+    alert(`AI Processing request: "${aiInput}"... \n(This will show dynamic result later)`);
   };
 
   return (
-    <div className="px-6 pt-4 animate-in fade-in duration-500">
-      <div className="flex gap-8 mb-8 items-center">
-        <button onClick={() => setHubSection('signals')} className={`text-3xl font-black tracking-tighter transition-all ${hubSection === 'signals' ? 'text-white' : 'text-zinc-800 scale-95'}`}>Signals</button>
-        <button onClick={() => setHubSection('guide')} className={`text-3xl font-black tracking-tighter transition-all ${hubSection === 'guide' ? 'text-white' : 'text-zinc-800 scale-95'}`}>Guide</button>
+    <div className="px-5 pt-6 pb-32 animate-in fade-in duration-500">
+      
+      {/* SWITCHER */}
+      <div className="flex gap-8 mb-8 items-center border-b border-white/10 pb-4">
+        <button onClick={() => setHubSection('signals')} className={`text-3xl font-black tracking-tighter transition-all ${hubSection === 'signals' ? 'text-white' : 'text-zinc-600'}`}>Signals</button>
+        <button onClick={() => setHubSection('guide')} className={`text-3xl font-black tracking-tighter transition-all ${hubSection === 'guide' ? 'text-white' : 'text-zinc-600'}`}>Guide</button>
       </div>
 
       {hubSection === 'signals' ? (
-        <div className="space-y-4">
-          <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] mb-4 italic">Live Analysis Results</h3>
-          {[
-            { name: 'AK-47 Slate', price: '$8.20', acc: '94%', res: '+14% Profit', color: 'text-green-500' },
-            { name: 'AWP Mortis', price: '$12.50', acc: '82%', res: '+5% Profit', color: 'text-green-400' },
-          ].map((s, i) => (
-            <div key={i} className="bg-[#111112] border border-white/5 rounded-[28px] p-5 flex items-center justify-between shadow-xl">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-black border border-white/5 flex items-center justify-center"><Zap size={18} className="text-yellow-500" /></div>
-                <div><h4 className="font-bold text-sm">{s.name}</h4><p className="text-[10px] text-zinc-600 font-bold tracking-widest uppercase">{s.acc} ACC</p></div>
+        <div className="space-y-6 animate-in slide-in-from-left-4">
+          
+          {/* ИНТЕРАКТИВНЫЙ AI ПОИСК */}
+          <div className="p-1 rounded-[24px] bg-gradient-to-r from-[#0abab5]/20 to-purple-500/20">
+            <div className="bg-[#111112] rounded-[22px] p-4">
+              <div className="flex items-center gap-2 mb-3 text-[#0abab5]">
+                <Sparkles size={16} /><span className="text-[10px] font-black uppercase tracking-widest">Neural Market Scanner</span>
               </div>
-              <div className={`text-[10px] font-black uppercase px-3 py-1 bg-black/50 rounded-full border border-white/5 ${s.color}`}>{s.res}</div>
-            </div>
-          ))}
-
-          <div className="mt-8 p-6 rounded-[32px] bg-gradient-to-br from-[#0d0d0f] to-black border border-white/10 relative overflow-hidden shadow-2xl">
-            <div className="flex items-center gap-2 mb-4 text-cyan-400">
-              <Sparkles size={16} /><span className="text-[10px] font-black uppercase tracking-widest italic">AI Assistant</span>
-            </div>
-            <p className="text-sm font-bold text-zinc-300 mb-6 italic">"Чему ты хочешь научиться сегодня, боец?"</p>
-            <div className="grid grid-cols-2 gap-3">
-              {['Green Set', 'Red-Black', 'Budget Loadout', 'Pro Meta'].map(btn => (
-                <button key={btn} onClick={() => askAI(btn)} className="py-4 bg-white/[0.03] border border-white/5 rounded-2xl text-[9px] font-black uppercase tracking-widest active:bg-cyan-500/20 transition-all">{btn}</button>
-              ))}
+              <form onSubmit={handleAiSearch} className="relative">
+                <input 
+                  type="text" 
+                  value={aiInput}
+                  onChange={(e) => setAiInput(e.target.value)}
+                  placeholder="Ask AI about skin drops, prices or trends..." 
+                  className="w-full bg-black border border-white/10 rounded-2xl py-4 pl-4 pr-12 text-sm font-medium focus:outline-none focus:border-[#0abab5]/50 text-white placeholder:text-zinc-600"
+                />
+                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#0abab5]/10 rounded-xl flex items-center justify-center text-[#0abab5]">
+                  <Search size={18} />
+                </button>
+              </form>
             </div>
           </div>
+
+          <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">Live Active Signals</h3>
+          
+          {/* СИГНАЛЫ (Жирные данные) */}
+          {[
+            { name: 'AK-47 Slate', float: 'FN 0.02', prob: '94% Buy', color: 'text-green-500' },
+            { name: 'AWP Mortis', float: 'MW 0.11', prob: '82% Hold', color: 'text-yellow-500' },
+          ].map((s, i) => (
+            <div key={i} className="bg-[#111112] border border-white/5 rounded-[24px] p-5 flex items-center justify-between shadow-lg">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center"><Zap size={20} className="text-[#0abab5]" /></div>
+                <div>
+                  <h4 className="font-bold text-sm text-white mb-1">{s.name}</h4>
+                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Float: {s.float}</p>
+                </div>
+              </div>
+              <div className={`text-[11px] font-black uppercase px-4 py-2 bg-black rounded-full border border-white/5 ${s.color}`}>{s.prob}</div>
+            </div>
+          ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-right-4">
-            {['Aim', 'Picks', 'Nades', 'Economy'].map(g => (
-                <div key={g} className="h-36 bg-[#111112] border border-white/5 rounded-[32px] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all">
-                    <Target size={24} className="text-zinc-700" />
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">{g}</span>
-                </div>
-            ))}
+        <div className="animate-in slide-in-from-right-4">
+          <div className="mb-6">
+            <h2 className="text-2xl font-black italic mb-1">Knowledge Base</h2>
+            <p className="text-sm font-bold text-zinc-500">"Чему ты хочешь научиться сегодня, боец?"</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+              {Object.keys(guideData).map(g => (
+                  <button 
+                    key={g} 
+                    onClick={() => { setGuideModal(guideData[g]); try{window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light')}catch(e){} }}
+                    className="h-40 bg-[#111112] border border-white/5 rounded-[32px] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all shadow-lg hover:border-white/10"
+                  >
+                      <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-zinc-400">
+                        <BookOpen size={20} />
+                      </div>
+                      <span className="text-[12px] font-black uppercase tracking-[0.2em]">{g}</span>
+                  </button>
+              ))}
+          </div>
         </div>
       )}
 
-      {aiResponse && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center px-6">
-          <div onClick={() => setAiResponse(null)} className="absolute inset-0 bg-black/90 backdrop-blur-sm" />
-          <div className="relative w-full bg-[#111112] border border-white/10 rounded-[32px] p-8 animate-in zoom-in-95 shadow-2xl">
-            <div className="flex justify-between mb-4 text-cyan-400 font-black uppercase text-xs"><span>{aiResponse.title}</span><button onClick={() => setAiResponse(null)}><X size={20} /></button></div>
-            <p className="text-white font-bold italic leading-relaxed">{aiResponse.text}</p>
+      {/* MODAL GUIDE (Глубокая инфа) */}
+      {guideModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center px-5">
+          <div onClick={() => setGuideModal(null)} className="absolute inset-0 bg-black/90 backdrop-blur-md" />
+          <div className="relative w-full bg-[#1c1c1e] border border-white/10 rounded-[32px] p-8 animate-in zoom-in-95 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+            <div className="flex justify-between items-center mb-6">
+              <h4 className="text-white font-black uppercase text-xl italic tracking-tight">{guideModal.title}</h4>
+              <button onClick={() => setGuideModal(null)} className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center"><X size={16} /></button>
+            </div>
+            <p className="text-zinc-300 font-medium leading-relaxed text-sm">
+              {guideModal.text}
+            </p>
+            <button onClick={() => setGuideModal(null)} className="w-full mt-8 py-4 bg-white/10 rounded-2xl font-bold uppercase tracking-widest text-xs text-white">Understood</button>
           </div>
         </div>
       )}
