@@ -1,24 +1,59 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Flame, Clock, Twitter, Bot, AlertCircle } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const Intel = () => {
   const { t } = useLanguage();
+  
+  // Оригинальные новости возвращены на место!
+  const [newsFeed, setNewsFeed] = useState([
+    { id: 1, type: 'official', title: "Valve release new CS2 Update: Overpass removed from Active Duty.", source: "Steam News", time: 120 }, // 2 мин
+    { id: 2, type: 'ai', title: "AI ALERT: AK-47 Slate volume increased by 400% in last hour. Possible buyout.", source: "OnlySkins AI", time: 900 }, // 15 мин
+    { id: 3, type: 'social', title: "s1mple hinted at returning to pro scene on his recent stream.", source: "Twitter / X", time: 3600 }, // 1 час
+    { id: 4, type: 'official', title: "Copenhagen Major Pick'Em Challenge rewards are now distributed.", source: "CS2 Blog", time: 10800 }, // 3 часа
+    { id: 5, type: 'ai', title: "MARKET TREND: Butterfly Knife Doppler dropping in price by 2.4%. Hold sales.", source: "OnlySkins AI", time: 14400 }, // 4 часа
+    { id: 6, type: 'social', title: "Insiders: Next case might feature the long-awaited M4A4 Howl V2.", source: "Reddit / r/cs2", time: 18000 }, // 5 часов
+  ]);
 
-  const newsFeed = [
-    { id: 1, type: 'official', title: "Valve release new CS2 Update: Overpass removed from Active Duty.", source: "Steam News", time: "2 min ago" },
-    { id: 2, type: 'ai', title: "AI ALERT: AK-47 Slate volume increased by 400% in last hour. Possible buyout.", source: "OnlySkins AI", time: "15 min ago" },
-    { id: 3, type: 'social', title: "s1mple hinted at returning to pro scene on his recent stream.", source: "Twitter / X", time: "1 hr ago" },
-    { id: 4, type: 'official', title: "Copenhagen Major Pick'Em Challenge rewards are now distributed.", source: "CS2 Blog", time: "3 hrs ago" },
-    { id: 5, type: 'ai', title: "MARKET TREND: Butterfly Knife Doppler dropping in price by 2.4%. Hold sales.", source: "OnlySkins AI", time: "4 hrs ago" },
-    { id: 6, type: 'social', title: "Insiders: Next case might feature the long-awaited M4A4 Howl V2.", source: "Reddit / r/cs2", time: "5 hrs ago" },
-  ];
+  // База для генератора новых (падают поверх старых)
+  const topics = ["M4A4 Howl", "AWP Dragon Lore", "Butterfly Knife", "Source 2", "s1mple", "Donk"];
+  const actions = ["price is pumping!", "dropped by 15%.", "spotted in new case leaks.", "banned from major.", "is going crazy on market."];
+  const types = ['official', 'social', 'ai'];
+  
+  useEffect(() => {
+    // Тикаем время у ВСЕХ новостей (и старых, и новых)
+    const timer = setInterval(() => {
+      setNewsFeed(prev => prev.map(news => ({ ...news, time: news.time + 1 })));
+    }, 1000);
+
+    // Каждые 8 секунд рожаем новую новость
+    const generator = setInterval(() => {
+      const newNews = {
+        id: Date.now(),
+        type: types[Math.floor(Math.random() * types.length)],
+        title: `${topics[Math.floor(Math.random() * topics.length)]} ${actions[Math.floor(Math.random() * actions.length)]}`,
+        source: "Live Feed",
+        time: 0,
+        isNew: true // Флаг для анимации
+      };
+      setNewsFeed(prev => [newNews, ...prev].slice(0, 15)); // Храним только 15 последних, чтобы не лагало
+    }, 8000);
+
+    return () => { clearInterval(timer); clearInterval(generator); };
+  }, []);
+
+  // Умный формат времени (секунды -> минуты -> часы)
+  const formatTime = (seconds) => {
+    if (seconds < 60) return `${seconds}s ago`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+    return `${Math.floor(seconds / 3600)}h ago`;
+  };
 
   const getStyle = (type) => {
     switch(type) {
-      case 'official': return 'shadow-[0_0_20px_rgba(255,255,255,0.15)] border-white/20';
-      case 'social': return 'shadow-[0_0_20px_rgba(234,179,8,0.2)] border-yellow-500/40';
-      case 'ai': return 'shadow-[0_0_20px_rgba(10,186,181,0.25)] border-[#0abab5]/40';
+      case 'official': return 'border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.1)]';
+      case 'social': return 'border-yellow-500/40 shadow-[0_0_10px_rgba(234,179,8,0.1)]';
+      case 'ai': return 'border-[#0abab5]/40 shadow-[0_0_10px_rgba(10,186,181,0.15)]';
       default: return 'border-white/10';
     }
   };
@@ -34,16 +69,15 @@ const Intel = () => {
 
   return (
     <div className="px-5 pt-8 pb-32 animate-in fade-in duration-500">
-      <h1 className="text-4xl font-black tracking-tighter mb-2 italic">
-        {t('intel')}
-      </h1>
-      <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.4em] mb-8">
-        {t('raw_data')}
-      </p>
+      <h1 className="text-4xl font-black tracking-tighter mb-2 italic text-white uppercase">{t('intel') || 'INTEL'}</h1>
+      <div className="flex items-center gap-2 mb-8">
+        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+        <p className="text-[10px] font-black text-green-500 uppercase tracking-[0.4em]">{t('raw_data') || 'LIVE STREAM'}</p>
+      </div>
 
       <div className="space-y-4">
         {newsFeed.map((item) => (
-          <div key={item.id} className={`bg-[#111112] rounded-[24px] p-5 border transition-all active:scale-[0.98] ${getStyle(item.type)}`}>
+          <div key={item.id} className={`bg-[#111112] rounded-[24px] p-5 border transition-all ${item.isNew ? 'animate-in slide-in-from-top-4 fade-in' : ''} ${getStyle(item.type)}`}>
             <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-2">
                 {getIcon(item.type)}
@@ -51,8 +85,9 @@ const Intel = () => {
                   {item.source}
                 </span>
               </div>
-              <div className="flex items-center text-zinc-600 text-[9px] font-bold uppercase">
-                <Clock size={10} className="mr-1" /> {item.time}
+              <div className="flex items-center text-zinc-500 text-[9px] font-bold uppercase">
+                {item.time < 5 && item.isNew ? <span className="text-green-500 mr-2 animate-pulse">NEW</span> : null}
+                <Clock size={10} className="mr-1" /> {formatTime(item.time)}
               </div>
             </div>
             <h3 className="text-sm font-bold leading-snug text-zinc-200">{item.title}</h3>
