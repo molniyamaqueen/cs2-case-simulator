@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Sparkles, Zap, Target, Search, X, BookOpen } from 'lucide-react';
+// 1. Подключаем хук языков
+import { useLanguage } from '../i18n/LanguageContext';
 
+const Hub = ({ activeTab, setActiveTab }) => {
+  // 2. Достаем функцию перевода
+  const { t } = useLanguage();
 const Hub = () => {
   const [hubSection, setHubSection] = useState('signals');
   const [aiInput, setAiInput] = useState('');
