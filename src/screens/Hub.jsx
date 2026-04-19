@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { Sparkles, Zap, Target, Search, X, BookOpen } from 'lucide-react';
+import { Sparkles, Zap, Search, X, BookOpen } from 'lucide-react';
 // 1. Подключаем хук языков
 import { useLanguage } from '../i18n/LanguageContext';
 
-const Hub = ({ activeTab, setActiveTab }) => {
+const Hub = () => {
   // 2. Достаем функцию перевода
   const { t } = useLanguage();
-const Hub = () => {
+  
   const [hubSection, setHubSection] = useState('signals');
   const [aiInput, setAiInput] = useState('');
-  const [guideModal, setGuideModal] = useState(null); // Состояние для модалки Гайда
+  const [guideModal, setGuideModal] = useState(null);
 
   // База знаний для Guide
   const guideData = {
@@ -23,7 +23,7 @@ const Hub = () => {
     e.preventDefault();
     if(!aiInput) return;
     try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('medium'); } catch (e) {}
-    setAiInput(''); // В реальности тут был бы запрос к бэкенду
+    setAiInput(''); 
     alert(`AI Processing request: "${aiInput}"... \n(This will show dynamic result later)`);
   };
 
@@ -62,7 +62,7 @@ const Hub = () => {
 
           <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">Live Active Signals</h3>
           
-          {/* СИГНАЛЫ (Жирные данные) */}
+          {/* СИГНАЛЫ */}
           {[
             { name: 'AK-47 Slate', float: 'FN 0.02', prob: '94% Buy', color: 'text-green-500' },
             { name: 'AWP Mortis', float: 'MW 0.11', prob: '82% Hold', color: 'text-yellow-500' },
@@ -83,7 +83,8 @@ const Hub = () => {
         <div className="animate-in slide-in-from-right-4">
           <div className="mb-6">
             <h2 className="text-2xl font-black italic mb-1">Knowledge Base</h2>
-            <p className="text-sm font-bold text-zinc-500">"Чему ты хочешь научиться сегодня, боец?"</p>
+            {/* Обернули фразу в перевод, если захочешь добавить ее в словари */}
+            <p className="text-sm font-bold text-zinc-500">{t('Чему ты хочешь научиться сегодня, боец?')}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
