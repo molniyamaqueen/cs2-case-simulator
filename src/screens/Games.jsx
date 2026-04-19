@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, Users, Timer, Star } from 'lucide-react';
+import { Trophy, Timer } from 'lucide-react';
+// 1. Подключаем хук языков
+import { useLanguage } from '../i18n/LanguageContext';
 
 const Games = () => {
+  // 2. Достаем функцию перевода
+  const { t } = useLanguage();
   const [timeLeft, setTimeLeft] = useState(30);
 
   // Таймер раунда (30 сек)
@@ -18,15 +22,15 @@ const Games = () => {
   ];
 
   return (
-    <div className="px-6 pt-4 animate-in fade-in duration-700">
-      {/* ВЕРХНЯЯ СТАТИСТИКА (СКРИН 1) */}
+    <div className="px-6 pt-4 animate-in fade-in duration-700 pb-32">
+      {/* ВЕРХНЯЯ СТАТИСТИКА */}
       <div className="flex gap-4 mb-6">
         <div className="flex-1 bg-[#111112] border border-white/5 rounded-[24px] p-4 text-center">
-          <p className="text-[9px] font-black text-zinc-600 uppercase mb-1">Max Win</p>
+          <p className="text-[9px] font-black text-zinc-600 uppercase mb-1">{t('max_win')}</p>
           <p className="text-sm font-black text-white">12.5 TON</p>
         </div>
         <div className="flex-1 bg-[#111112] border border-white/5 rounded-[24px] p-4 text-center">
-          <p className="text-[9px] font-black text-zinc-600 uppercase mb-1">Round Win</p>
+          <p className="text-[9px] font-black text-zinc-600 uppercase mb-1">{t('round_win')}</p>
           <p className="text-sm font-black text-green-500">2.1 TON</p>
         </div>
       </div>
@@ -36,32 +40,32 @@ const Games = () => {
         {/* Хедер внутри квадрата */}
         <div className="absolute top-5 left-6 flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 italic">Live Round</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 italic">{t('live_round')}</span>
         </div>
         <div className="absolute top-5 right-6 flex items-center gap-2 bg-black/40 px-3 py-1 rounded-full border border-white/5">
           <Timer size={14} className="text-zinc-500" />
           <span className="text-[11px] font-black italic">{timeLeft}s</span>
         </div>
 
-        {/* БАРАБАН (Имитация) */}
+        {/* БАРАБАН */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-48 h-48 rounded-full border-[10px] border-white/5 flex items-center justify-center relative">
             <div className="absolute inset-0 rounded-full border-t-[10px] border-purple-500 animate-[spin_3s_linear_infinite]" />
             <div className="text-center">
               <Trophy size={40} className="mx-auto mb-2 text-yellow-500/50" />
-              <p className="text-2xl font-black italic tracking-tighter">ROLLING</p>
+              <p className="text-2xl font-black italic tracking-tighter">{t('rolling')}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* СПИСОК ИГРОКОВ (СКРИН 1) */}
+      {/* СПИСОК ИГРОКОВ */}
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-black italic">Players <span className="text-zinc-700 ml-1">3</span></h3>
-        <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Game #77200</p>
+        <h3 className="text-xl font-black italic">{t('players')} <span className="text-zinc-700 ml-1">{players.length}</span></h3>
+        <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">{t('game')} #77200</p>
       </div>
 
-      <div className="space-y-3 pb-10">
+      <div className="space-y-3">
         {players.map((p) => (
           <div key={p.id} className="bg-[#111112] border border-white/5 rounded-[28px] p-4 flex items-center justify-between active:scale-95 transition-all">
             <div className="flex items-center gap-4">
@@ -78,7 +82,7 @@ const Games = () => {
             </div>
             <div className="text-right">
               <p className="font-black text-sm text-blue-400 italic">{p.bet}</p>
-              <p className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">In pot</p>
+              <p className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">{t('in_pot')}</p>
             </div>
           </div>
         ))}
