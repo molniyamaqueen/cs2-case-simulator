@@ -1,36 +1,46 @@
 import React, { useState } from 'react';
-import { Sparkles, Zap, Search, X, BookOpen } from 'lucide-react';
-// 1. Подключаем хук языков
+import { Sparkles, Zap, Search, X, BookOpen, PlayCircle, Loader2 } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const Hub = () => {
-  // 2. Достаем функцию перевода
   const { t } = useLanguage();
-  
   const [hubSection, setHubSection] = useState('signals');
   const [aiInput, setAiInput] = useState('');
+  const [aiResponse, setAiResponse] = useState(null);
+  const [isThinking, setIsThinking] = useState(false);
   const [guideModal, setGuideModal] = useState(null);
 
-  // База знаний для Guide
   const guideData = {
-    'Aim': { title: "Aim Mastery", text: "Crosshair placement is 90% of your aim. Always keep your crosshair at head level and pre-aim common angles. Download Yprac maps from the workshop." },
-    'Picks': { title: "Entry Picks", text: "Don't peek dry. Use flashes. If you are playing entry fragger, your goal is to create space. Communicate your path to the second man in." },
-    'Nades': { title: "Better Раскидка", text: "Learn jumpthrow binds (128 tick). Essential smokes: Mirage Window, Inferno Coffins, Dust2 Xbox. One good smoke wins the round." },
-    'Economy': { title: "Economy Rules", text: "Loss bonus starts at $1400. If your team has under $2000, FULL ECO. Don't buy a Deagle if it breaks your next round full buy ($4300 minimum)." }
+    'Aim': { title: "Aim Mastery", text: "Always keep your crosshair at head level.", videoLink: "https://t.me/TvoyBot?start=video_aim" },
+    'Nades': { title: "Better Раскидка", text: "Learn jumpthrow binds. Mirage Window smoke.", videoLink: "https://t.me/TvoyBot?start=video_smokes" }
   };
+
+  const aiAnswers = [
+    "I analyzed 10k trades. Buy AWP Asiimov right now.",
+    "Market is volatile. Hold your cases for 2 more weeks.",
+    "Drop probability for your account is currently 4.2%. Play DM.",
+    "Based on leaks, new operation drops in 14 days."
+  ];
 
   const handleAiSearch = (e) => {
     e.preventDefault();
-    if(!aiInput) return;
+    if(!aiInput.trim()) return;
     try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('medium'); } catch (e) {}
-    setAiInput(''); 
-    alert(`AI Processing request: "${aiInput}"... \n(This will show dynamic result later)`);
+    
+    setAiInput('');
+    setIsThinking(true);
+    setAiResponse(null);
+
+    // Имитация работы ИИ (задержка 2 сек)
+    setTimeout(() => {
+      setIsThinking(false);
+      setAiResponse(aiAnswers[Math.floor(Math.random() * aiAnswers.length)]);
+    }, 2000);
   };
 
   return (
     <div className="px-5 pt-6 pb-32 animate-in fade-in duration-500">
       
-      {/* SWITCHER */}
       <div className="flex gap-8 mb-8 items-center border-b border-white/10 pb-4">
         <button onClick={() => setHubSection('signals')} className={`text-3xl font-black tracking-tighter transition-all ${hubSection === 'signals' ? 'text-white' : 'text-zinc-600'}`}>Signals</button>
         <button onClick={() => setHubSection('guide')} className={`text-3xl font-black tracking-tighter transition-all ${hubSection === 'guide' ? 'text-white' : 'text-zinc-600'}`}>Guide</button>
@@ -41,31 +51,39 @@ const Hub = () => {
           
           {/* ИНТЕРАКТИВНЫЙ AI ПОИСК */}
           <div className="p-1 rounded-[24px] bg-gradient-to-r from-[#0abab5]/20 to-purple-500/20">
-            <div className="bg-[#111112] rounded-[22px] p-4">
+            <div className="bg-[#111112] rounded-[22px] p-4 relative overflow-hidden">
               <div className="flex items-center gap-2 mb-3 text-[#0abab5]">
-                <Sparkles size={16} /><span className="text-[10px] font-black uppercase tracking-widest">Neural Market Scanner</span>
+                <Sparkles size={16} /><span className="text-[10px] font-black uppercase tracking-widest">Neural AI</span>
               </div>
-              <form onSubmit={handleAiSearch} className="relative">
+              
+              <form onSubmit={handleAiSearch} className="relative mb-4">
                 <input 
                   type="text" 
                   value={aiInput}
                   onChange={(e) => setAiInput(e.target.value)}
-                  placeholder="Ask AI about skin drops, prices or trends..." 
-                  className="w-full bg-black border border-white/10 rounded-2xl py-4 pl-4 pr-12 text-sm font-medium focus:outline-none focus:border-[#0abab5]/50 text-white placeholder:text-zinc-600"
+                  placeholder="Ask AI what to buy..." 
+                  disabled={isThinking}
+                  className="w-full bg-black border border-white/10 rounded-2xl py-4 pl-4 pr-12 text-sm font-medium focus:outline-none focus:border-[#0abab5]/50 text-white placeholder:text-zinc-600 disabled:opacity-50"
                 />
-                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#0abab5]/10 rounded-xl flex items-center justify-center text-[#0abab5]">
-                  <Search size={18} />
+                <button type="submit" disabled={isThinking} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#0abab5]/10 rounded-xl flex items-center justify-center text-[#0abab5]">
+                  {isThinking ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}
                 </button>
               </form>
+
+              {/* ОТВЕТ ИИ */}
+              {isThinking && <p className="text-sm font-bold text-zinc-500 animate-pulse px-2">Analyzing market data...</p>}
+              {aiResponse && (
+                <div className="p-4 bg-[#0abab5]/10 border border-[#0abab5]/20 rounded-2xl animate-in slide-in-from-bottom-2">
+                  <p className="text-sm font-bold text-[#0abab5] leading-snug">{aiResponse}</p>
+                </div>
+              )}
             </div>
           </div>
 
-          <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">Live Active Signals</h3>
+          <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">Live Signals</h3>
           
-          {/* СИГНАЛЫ */}
           {[
             { name: 'AK-47 Slate', float: 'FN 0.02', prob: '94% Buy', color: 'text-green-500' },
-            { name: 'AWP Mortis', float: 'MW 0.11', prob: '82% Hold', color: 'text-yellow-500' },
           ].map((s, i) => (
             <div key={i} className="bg-[#111112] border border-white/5 rounded-[24px] p-5 flex items-center justify-between shadow-lg">
               <div className="flex items-center gap-4">
@@ -83,19 +101,14 @@ const Hub = () => {
         <div className="animate-in slide-in-from-right-4">
           <div className="mb-6">
             <h2 className="text-2xl font-black italic mb-1">Knowledge Base</h2>
-            {/* Обернули фразу в перевод, если захочешь добавить ее в словари */}
-            <p className="text-sm font-bold text-zinc-500">{t('Чему ты хочешь научиться сегодня, боец?')}</p>
+            <p className="text-sm font-bold text-zinc-500">Video guides & strats</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
               {Object.keys(guideData).map(g => (
-                  <button 
-                    key={g} 
-                    onClick={() => { setGuideModal(guideData[g]); try{window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light')}catch(e){} }}
-                    className="h-40 bg-[#111112] border border-white/5 rounded-[32px] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all shadow-lg hover:border-white/10"
-                  >
+                  <button key={g} onClick={() => setGuideModal(guideData[g])} className="h-40 bg-[#111112] border border-white/5 rounded-[32px] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all shadow-lg hover:border-white/10">
                       <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-zinc-400">
-                        <BookOpen size={20} />
+                        <PlayCircle size={20} />
                       </div>
                       <span className="text-[12px] font-black uppercase tracking-[0.2em]">{g}</span>
                   </button>
@@ -104,7 +117,7 @@ const Hub = () => {
         </div>
       )}
 
-      {/* MODAL GUIDE (Глубокая инфа) */}
+      {/* MODAL С ВИДЕО */}
       {guideModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center px-5">
           <div onClick={() => setGuideModal(null)} className="absolute inset-0 bg-black/90 backdrop-blur-md" />
@@ -113,10 +126,12 @@ const Hub = () => {
               <h4 className="text-white font-black uppercase text-xl italic tracking-tight">{guideModal.title}</h4>
               <button onClick={() => setGuideModal(null)} className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center"><X size={16} /></button>
             </div>
-            <p className="text-zinc-300 font-medium leading-relaxed text-sm">
-              {guideModal.text}
-            </p>
-            <button onClick={() => setGuideModal(null)} className="w-full mt-8 py-4 bg-white/10 rounded-2xl font-bold uppercase tracking-widest text-xs text-white">Understood</button>
+            <p className="text-zinc-300 font-medium leading-relaxed text-sm mb-6">{guideModal.text}</p>
+            
+            {/* КНОПКА ПЕРЕХОДА НА ВИДЕО В БОТЕ */}
+            <a href={guideModal.videoLink} target="_blank" rel="noopener noreferrer" className="w-full py-4 bg-purple-500 rounded-2xl font-bold uppercase tracking-widest text-xs text-white flex justify-center items-center gap-2">
+              <PlayCircle size={18} /> Watch Video
+            </a>
           </div>
         </div>
       )}
