@@ -5,14 +5,15 @@ import Hub from './screens/Hub';
 import Games from './screens/Games';
 import Intel from './screens/Intel';
 import Profile from './screens/Profile';
+import { useLanguage } from './i18n/LanguageContext';
 
 const App = () => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('hub');
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Имитация загрузки приложения (2.5 секунды)
   useEffect(() => {
-    // try { window.Telegram?.WebApp?.ready(); } catch (e) {}
     const timer = setTimeout(() => setIsLoaded(true), 2500);
     return () => clearTimeout(timer);
   }, []);
@@ -27,7 +28,7 @@ const App = () => {
     }
   };
 
-  // ЭКРАН ЗАГРУЗКИ (Белый с каплями)
+  // ЭКРАН ЗАГРУЗКИ (Белый с каплями, High Contrast Focus)
   if (!isLoaded) {
     return (
       <div className="fixed inset-0 bg-white z-[999] flex flex-col items-center justify-center overflow-hidden animate-out fade-out duration-1000 delay-2000">
@@ -53,11 +54,11 @@ const App = () => {
     );
   }
 
-  // ОСНОВНОЕ ПРИЛОЖЕНИЕ
+  // ОСНОВНОЕ ПРИЛОЖЕНИЕ (Темный дизайн Santa Lucia)
   return (
     <div className="flex flex-col h-screen bg-[#0d0d0f] text-white overflow-hidden">
       <Header onMenuClick={() => setActiveTab('profile')} /> 
-      <main className="flex-1 overflow-y-auto pb-24">
+      <main className="flex-1 overflow-y-auto pb-24 transition-opacity duration-300">
         {renderScreen()}
       </main>
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
