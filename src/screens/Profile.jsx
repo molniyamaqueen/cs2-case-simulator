@@ -75,38 +75,38 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* СЕКЦИЯ РЕФЕРАЛОВ (Оставил темной для контраста, либо скажи, перекрашу тоже) */}
+     {/* СЕКЦИЯ РЕФЕРАЛОВ (Холодный Silver-стиль) */}
       <h3 className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-4 px-2 italic">
         {t('invite_title')} <span className="text-zinc-600 ml-1">💎</span>
       </h3>
 
-      <div className="w-full rounded-[32px] bg-gradient-to-br from-[#4a246b] via-[#2c1345] to-[#18181b] p-6 mb-6 shadow-2xl border border-white/5">
+      <div className="w-full rounded-[32px] bg-gradient-to-br from-zinc-50 via-zinc-100 to-zinc-200 p-6 mb-6 shadow-xl border border-white">
         <div className="flex justify-between items-center mb-5">
           <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-white">{t('level')} 1</span>
-            <span className="bg-white/20 text-white text-[11px] font-black px-2 py-1 rounded-full">5%</span>
+            <span className="text-lg font-bold text-black">{t('level')} 1</span>
+            <span className="bg-black/10 text-black text-[11px] font-black px-2 py-1 rounded-full">5%</span>
           </div>
         </div>
 
         <div className="flex gap-3">
-          <div className="flex-1 bg-white/5 rounded-full px-5 py-4 flex items-center justify-between border border-white/[0.03]">
-            <div className="flex items-center gap-2 text-zinc-400">
-              <WalletCards size={16} className="text-purple-400"/><span className="text-[11px] font-bold">{t('earned')}</span>
+          <div className="flex-1 bg-white rounded-full px-5 py-4 flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-2 text-zinc-500">
+              <WalletCards size={16} className="text-purple-500"/><span className="text-[11px] font-bold uppercase">{t('earned')}</span>
             </div>
-            <div className="text-xl font-bold flex items-center gap-1 text-white">0</div>
+            <div className="text-xl font-black text-black">0</div>
           </div>
-          <div className="flex-1 bg-white/5 rounded-full px-5 py-4 flex items-center justify-between border border-white/[0.03]">
-            <div className="flex items-center gap-2 text-zinc-400">
-              <Users size={16} className="text-cyan-400"/><span className="text-[11px] font-bold">{t('friends')}</span>
+          <div className="flex-1 bg-white rounded-full px-5 py-4 flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-2 text-zinc-500">
+              <Users size={16} className="text-cyan-500"/><span className="text-[11px] font-bold uppercase">{t('friends')}</span>
             </div>
-            <div className="text-xl font-bold text-white">0</div>
+            <div className="text-xl font-black text-black">0</div>
           </div>
         </div>
       </div>
 
-      {/* КНОПКА ПРИГЛАШЕНИЯ */}
-      <button onClick={handleInvite} className="w-full h-16 bg-[#a855f7] rounded-full font-bold text-lg text-white flex items-center justify-center gap-3 active:scale-95 shadow-[0_0_30px_rgba(168,85,247,0.3)] pr-4 transition-transform">
-        {copyStatus} <Plus size={24} className="bg-white/20 rounded-full p-1.5" />
+      {/* КНОПКА ПРИГЛАШЕНИЯ (Премиальная черная) */}
+      <button onClick={handleInvite} className="w-full h-16 bg-[#18181b] rounded-full font-bold text-lg text-white flex items-center justify-center gap-3 active:scale-95 shadow-xl pr-4 transition-transform">
+        {copyStatus} <Plus size={24} className="bg-white/10 text-white rounded-full p-1.5" />
       </button>
 
       {/* ШТОРКА МЕНЮ (Осталась без изменений) */}
