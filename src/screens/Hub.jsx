@@ -1,111 +1,74 @@
-import React, { useState } from 'react';
-import { Sparkles, Zap, TrendingUp, TrendingDown, Clock, Gem } from 'lucide-react';
+import React from 'react';
+import { TrendingUp, ArrowUpRight, Zap, BarChart3, Globe } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const Hub = () => {
   const { t } = useLanguage();
-  const [activeTag, setActiveTag] = useState('All');
 
-  // Фейковые жирные сигналы для сетки (Portals style)
   const signals = [
-    { name: 'AK-47 Slate', prob: '94%', vol: '$1.2k', trend: 'up', type: 'type_ai' },
-    { name: 'AWP Mortis', prob: '88%', vol: '$800', trend: 'up', type: 'type_social' },
-    { name: 'Glove Case', prob: '91%', vol: '$4.1k', trend: 'up', type: 'type_ai' },
-    { name: 'Butterfly Knife', prob: '82%', vol: '$15k', trend: 'down', type: 'type_ai' },
+    { name: 'AK-47 Slate', prob: '94%', vol: '$1.2k', change: '+2.4%' },
+    { name: 'AWP Mortis', prob: '88%', vol: '$800', change: '+1.1%' },
+    { name: 'Glove Case', prob: '91%', vol: '$4.1k', change: '-0.5%' },
+    { name: 'Karambit', prob: '82%', vol: '$15k', change: '+5.7%' },
   ];
 
-  const tags = ['All', 'Knives', 'Gloves', 'Cases', 'AK-47'];
-
   return (
-    <div className="px-5 pt-8 pb-32 animate-in fade-in duration-500 overflow-y-auto">
-      
-      {/* HEADER (Как в Портале) */}
-      <div className="flex justify-between items-center mb-8 pr-1">
-          <div>
-            <h1 className="text-4xl font-black tracking-tighter italic text-white uppercase">{t('hub_title')}</h1>
-            <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em]">{t('raw_data')}</p>
-          </div>
-          <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/5 shadow-xl text-yellow-400 active:scale-95 transition-all">
-             <Gem size={20} />
-          </div>
-      </div>
-
-      {/* 1. MARKET INDEX (Крупный блок с графиком) */}
-      <div className="p-1 rounded-[32px] bg-gradient-to-r from-[#0abab5]/20 to-purple-500/20 mb-8 shadow-2xl">
-          <div className="bg-[#111112] rounded-[28px] p-6 border border-white/[0.03]">
-              <div className="flex justify-between items-center mb-5 pr-1">
-                  <div className="flex items-center gap-2.5 text-[#0abab5]">
-                      <Sparkles size={16} /><span className="text-[10px] font-black uppercase tracking-widest">{t('mkt_index')}</span>
-                  </div>
-                  <div className="text-[11px] font-black uppercase px-4 py-2 bg-black rounded-full border border-green-500/10 text-green-500 flex items-center gap-1.5 shrink-0">
-                    <TrendingUp size={12} /> +2.4% (1h)
-                  </div>
-              </div>
-              
-              {/* Имитация графика-линии */}
-              <div className="w-full h-16 relative mb-4">
-                  <svg viewBox="0 0 100 20" className="w-full h-full stroke-green-500 stroke-[1.5] fill-none">
-                      <path d="M0 15 Q 10 5, 20 12 T 40 8 T 60 14 T 80 5 T 100 10" className="animate-[dash_2s_ease-out]" />
-                  </svg>
-                  <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-              </div>
-
-              <div className="flex justify-between items-center pr-1">
-                  <span className="text-4xl font-black tracking-tighter text-white">418.2 <span className="text-lg text-zinc-600">points</span></span>
-                  <p className="text-xs font-bold text-zinc-500">Bullish sentiment</p>
-              </div>
-          </div>
-      </div>
-
-      {/* 2. TAGS FILTER (Таблетки, как в Портале) */}
-      <div className="flex gap-2.5 overflow-x-auto pb-2 mb-8 pr-2">
-          {tags.map(tag => (
-              <button 
-                  key={tag} 
-                  onClick={() => setActiveTag(tag)}
-                  className={`h-10 px-6 rounded-full flex items-center justify-center shrink-0 border transition-all text-[11px] font-black uppercase tracking-wider ${activeTag === tag ? 'bg-white text-black border-white shadow-xl' : 'bg-white/5 text-zinc-400 border-white/5 hover:bg-white/10'}`}
-              >
-                  {t(`tag_${tag.toLowerCase()}`)}
-              </button>
-          ))}
-      </div>
-
-      {/* 3. SIGNALS GRID (Плотная сетка 2х2 в стиле Портала) */}
-      <div className="mb-5 flex justify-between items-center px-2 pr-2">
-        <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">{t('signals_title')}</h3>
-        <div className="flex items-center gap-1.5 text-zinc-700 text-[10px] font-bold">
-            <Clock size={12}/> Live
+    <div className="px-6 pt-10 pb-32 animate-in fade-in duration-700 bg-[#0a0a0a]">
+      {/* HEADER SECTION */}
+      <div className="mb-12">
+        <h1 className="text-5xl font-black tracking-tighter mb-4 text-white uppercase italic">
+          {t('hub_title')}
+        </h1>
+        <div className="flex items-center gap-4 text-zinc-500 font-bold text-[10px] tracking-[0.3em] uppercase">
+           <span className="flex items-center gap-1.5"><Globe size={12}/> Global Market</span>
+           <span className="w-1 h-1 bg-zinc-800 rounded-full"/>
+           <span>{t('raw_data')}</span>
         </div>
       </div>
-      
-      <div className="grid grid-cols-2 gap-4 pb-10">
-          {signals.map((s, i) => (
-            <div key={i} className="bg-[#111112] border border-white/5 rounded-[28px] p-5 flex flex-col gap-4 shadow-lg active:scale-95 transition-all">
-                <div className="flex justify-between items-start pr-1">
-                    <div className="w-3/4">
-                        <h4 className="font-bold text-sm text-white mb-0.5 truncate">{s.name}</h4>
-                        <span className={`text-[10px] font-black uppercase tracking-widest ${s.type === 'type_ai' ? 'text-[#0abab5]' : 'text-yellow-500'}`}>
-                           {t(s.type)}
-                        </span>
-                    </div>
-                    {s.trend === 'up' ? <TrendingUp size={16} className="text-green-500" /> : <TrendingDown size={16} className="text-red-500" />}
-                </div>
-                
-                <div className="w-full h-px bg-white/5" />
-                
-                <div className="flex justify-between items-center pr-1">
-                   <div className="text-center">
-                       <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Vol</p>
-                       <span className="text-xs font-bold text-white">{s.vol}</span>
-                   </div>
-                   <div className="text-[12px] font-black uppercase px-3.5 py-1.5 bg-black rounded-full border border-green-500/10 text-green-500">
-                      {s.prob}
-                   </div>
-                </div>
-            </div>
-          ))}
+
+      {/* MARKET INDEX CARD (Cryptomannn Style) */}
+      <div className="bg-[#111112] border border-white/5 rounded-[32px] p-8 mb-10 shadow-2xl relative overflow-hidden">
+        <div className="flex justify-between items-start mb-10">
+          <div>
+            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2">{t('mkt_index')}</p>
+            <h2 className="text-5xl font-black text-white italic tracking-tighter">418.27</h2>
+          </div>
+          <div className="bg-green-500/10 text-green-500 px-4 py-2 rounded-full text-xs font-black flex items-center gap-2 border border-green-500/20">
+             <TrendingUp size={14}/> +4.12%
+          </div>
+        </div>
+        
+        {/* Minimalist Chart Line */}
+        <div className="w-full h-24 relative opacity-50">
+           <svg viewBox="0 0 100 20" className="w-full h-full stroke-green-500 stroke-[1] fill-none">
+              <path d="M0 18 L 20 12 L 40 15 L 60 5 L 80 8 L 100 2" className="animate-pulse" />
+           </svg>
+        </div>
       </div>
 
+      {/* SIGNALS GRID */}
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xs font-black text-zinc-400 uppercase tracking-widest italic">{t('signals_title')}</h3>
+        <BarChart3 size={16} className="text-zinc-700" />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        {signals.map((s, i) => (
+          <div key={i} className="bg-[#111112] border border-white/5 rounded-[28px] p-6 hover:border-white/20 transition-all active:scale-95 group">
+            <div className="flex justify-between items-start mb-6">
+              <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-zinc-400 group-hover:text-white transition-colors">
+                <Zap size={20} />
+              </div>
+              <ArrowUpRight size={16} className="text-zinc-700 group-hover:text-white transition-all" />
+            </div>
+            <h4 className="text-sm font-black text-white mb-1 uppercase truncate">{s.name}</h4>
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+               <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">{s.vol}</span>
+               <span className="text-xs font-black text-[#0abab5]">{s.prob}</span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
