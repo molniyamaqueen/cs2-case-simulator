@@ -28,15 +28,15 @@ const App = () => {
     }
   };
 
-  // ЭКРАН ЗАСТАВКИ (Твоя крутая картинка OS)
+  // ЭКРАН ЗАСТАВКИ (Твоя крутая картинка OS по прямой ссылке)
   if (!isLoaded) {
     return (
       <div className="fixed inset-0 bg-[#0d0d0f] z-[999] flex flex-col items-center justify-center overflow-hidden animate-out fade-out duration-1000 delay-2000">
         
-        {/* Изображение на весь экран (Берется из папки public) */}
+        {/* Изображение на весь экран (Подтягивается из интернета) */}
         <div className="absolute inset-0 w-full h-full">
             <img 
-             src="./splash.png" 
+              src="https://i.postimg.cc/QMkxk7Xf/splash.png" 
               alt="loading screen" 
               className="w-full h-full object-cover"
             />
