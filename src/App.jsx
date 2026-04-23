@@ -36,7 +36,7 @@ const App = () => {
         {/* Изображение на весь экран (Берется из папки public) */}
         <div className="absolute inset-0 w-full h-full">
             <img 
-              src="/splash.png" 
+             src="./splash.png" 
               alt="loading screen" 
               className="w-full h-full object-cover"
             />
