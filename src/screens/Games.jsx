@@ -1,153 +1,135 @@
 import React, { useState, useEffect } from 'react';
-import { Swords, Timer, Wallet, Loader2 } from 'lucide-react';
-import { useLanguage } from '../i18n/LanguageContext';
+import { Trophy, ShieldCheck } from 'lucide-react';
 
 const Games = () => {
-  const { t } = useLanguage();
-  
-  // Состояния игры
-  const [timeLeft, setTimeLeft] = useState(45);
-  const [isRolling, setIsRolling] = useState(false);
-  const [myBet, setMyBet] = useState(0);
-  
-  // Боты (Изначальный пул)
-  const [bots, setBots] = useState([
-    { id: 'bot1', name: "@whale_trade", bet: 1.5, avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100", isMe: false },
-    { id: 'bot2', name: "@sniper_pro", bet: 0.8, avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100", isMe: false },
-  ]);
+  const [gameState, setGameState] = useState('betting'); // 'betting', 'rolling', 'ended'
+  const [timeLeft, setTimeLeft] = useState(30);
+  const [winner, setWinner] = useState(null);
+  const [cursorPos, setCursorPos] = useState(50); // Позиция "рулетки" (0-100%)
 
-  // Считаем общий банк (Пот)
-  const totalPot = bots.reduce((sum, bot) => sum + bot.bet, 0) + myBet;
+  const players = [
+    { id: 1, name: "@korablickk", bet: 1.5, color: "#a855f7" },
+    { id: 2, name: "@whale_trade", bet: 0.8, color: "#06b6d4" },
+    { id: 3, name: "@sniper22", bet: 0.2, color: "#f97316" },
+  ];
 
-  // 1. Главный цикл игры (Таймер и Ролл)
+  // Математика банка
+  const totalBank = players.reduce((acc, p) => acc + p.bet, 0);
+  const rakeAmount = totalBank * 0.05; // Твоя комиссия 5%
+  const prizePool = totalBank - rakeAmount; // Чистый выигрыш победителя
+
   useEffect(() => {
-    if (timeLeft <= 0) {
-      setIsRolling(true);
+    let timer;
+    if (timeLeft > 0) {
+      timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
       
-      // Имитация прокрутки рулетки (4 секунды), затем рестарт
-      setTimeout(() => {
-        setIsRolling(false);
-        setTimeLeft(45);
-        setMyBet(0);
-        // Генерируем новые стартовые ставки для ботов в новом раунде
-        setBots([
-          { id: 'bot1', name: "@whale_trade", bet: Number((Math.random() * 2 + 0.5).toFixed(2)), avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100", isMe: false },
-          { id: 'bot2', name: "@sniper_pro", bet: Number((Math.random() * 1 + 0.1).toFixed(2)), avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100", isMe: false },
-        ]);
-      }, 4000);
-      return;
+      // Имитация бегающего курсора рулетки во время rolling
+      if (gameState === 'rolling') {
+        setCursorPos(Math.random() * 100);
+      }
+      
+    } else {
+      if (gameState === 'betting') {
+        setGameState('rolling');
+        setTimeLeft(15);
+      } else if (gameState === 'rolling') {
+        // Логика победителя
+        const rand = Math.random() * totalBank;
+        let cumulative = 0;
+        let finalPos = 0;
+        
+        for (const p of players) {
+          cumulative += p.bet;
+          if (rand <= cumulative) {
+            setWinner(p);
+            // Высчитываем точку остановки курсора (где-то на отрезке победителя)
+            const segmentStart = ((cumulative - p.bet) / totalBank) * 100;
+            const segmentEnd = (cumulative / totalBank) * 100;
+            finalPos = segmentStart + (Math.random() * (segmentEnd - segmentStart));
+            break;
+          }
+        }
+        setCursorPos(finalPos);
+        setGameState('ended');
+      }
     }
-
-    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     return () => clearInterval(timer);
-  }, [timeLeft]);
-
-  // 2. Имитация живых ставок от ботов
-  useEffect(() => {
-    if (timeLeft < 40 && timeLeft > 5 && !isRolling) {
-      const botAction = setInterval(() => {
-         if (Math.random() > 0.6) { // 40% шанс, что бот докинет денег
-            setBots(prev => {
-               const newBots = [...prev];
-               const randomBot = Math.floor(Math.random() * newBots.length);
-               newBots[randomBot].bet = Number((newBots[randomBot].bet + Math.random() * 0.5).toFixed(2));
-               return newBots;
-            });
-         }
-      }, 2500); // Каждые 2.5 секунды проверка
-      return () => clearInterval(botAction);
-    }
-  }, [timeLeft, isRolling]);
-
-  // Функция для нашей ставки
-  const handleJoin = () => {
-    if (isRolling) return;
-    try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('medium'); } catch(e) {}
-    setMyBet(prev => Number((prev + 0.5).toFixed(2))); // Добавляем 0.5 TON за клик
-  };
-
-  // Собираем всех игроков (боты + мы, если мы сделали ставку) и сортируем по убыванию ставки
-  const allPlayers = [...bots];
-  if (myBet > 0) {
-     allPlayers.push({ id: 'me', name: "You (Anonymous)", bet: myBet, avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100", isMe: true });
-  }
-  allPlayers.sort((a, b) => b.bet - a.bet);
+  }, [timeLeft, gameState]);
 
   return (
-    <div className="px-6 pt-10 pb-32 animate-in fade-in duration-700 bg-[#0a0a0a] min-h-full">
-      
-      {/* HEADER */}
-      <div className="mb-10">
-        <h1 className="text-5xl font-black tracking-tighter mb-2 text-white uppercase italic">ARENA</h1>
-        <div className="flex items-center gap-3 text-zinc-500 font-bold text-[10px] tracking-[0.3em] uppercase">
-           <span className="flex items-center gap-1.5"><Swords size={12}/> Live Clash</span>
-           <span className="w-1 h-1 bg-zinc-800 rounded-full"/>
-           <span>Room #882</span>
+    <div className="px-6 pt-10 pb-32 bg-[#0a0a0a] min-h-full font-sans">
+      <h1 className="text-5xl font-black italic text-white mb-8 uppercase tracking-tighter">ARENA</h1>
+
+      {/* ВИЗУАЛЬНАЯ РУЛЕТКА */}
+      <div className="relative w-full h-8 bg-zinc-900 rounded-full mb-8 flex overflow-hidden border border-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+        {/* Сегменты игроков */}
+        {players.map(p => (
+          <div key={p.id} style={{ width: `${(p.bet / totalBank) * 100}%`, backgroundColor: p.color }} className="h-full opacity-80" />
+        ))}
+        
+        {/* Курсор рулетки */}
+        <div 
+          className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_10px_white] transition-all duration-300 z-10"
+          style={{ 
+            left: `${cursorPos}%`,
+            transitionDuration: gameState === 'rolling' ? '300ms' : '1500ms',
+            transitionTimingFunction: gameState === 'ended' ? 'ease-out' : 'linear'
+          }}
+        />
+      </div>
+
+      {/* Таймер и Банк */}
+      <div className="bg-[#111112] border border-white/5 rounded-[32px] p-8 mb-6 text-center">
+        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2">
+          {gameState === 'betting' ? 'Time to Bet' : 'Rolling...'}
+        </p>
+        <h2 className="text-6xl font-black text-white italic mb-4">{timeLeft}s</h2>
+        
+        <div className="flex justify-center gap-4 text-sm font-bold">
+          <div className="text-zinc-400">Pot: <span className="text-white">{totalBank.toFixed(2)} TON</span></div>
+          <div className="text-zinc-600">|</div>
+          <div className="text-[#0abab5] flex items-center gap-1"><ShieldCheck size={14}/> Rake 5%: {rakeAmount.toFixed(2)} TON</div>
         </div>
       </div>
 
-      {/* MAIN POT CARD */}
-      <div className="bg-[#111112] border border-white/5 rounded-[32px] p-8 mb-6 shadow-2xl relative overflow-hidden flex flex-col items-center text-center">
-        
-        {/* Таймер */}
-        <div className={`absolute top-6 right-6 flex items-center gap-2 px-4 py-2 rounded-full border transition-colors ${isRolling ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-white/5 border-white/5 text-white'}`}>
-          {isRolling ? <Loader2 size={14} className="animate-spin" /> : <Timer size={14} className="text-zinc-400" />}
-          <span className="text-xs font-black">{isRolling ? 'ROLLING...' : `${timeLeft}s`}</span>
-        </div>
-
-        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4 mt-8 transition-all">Total Pot</p>
-        <h2 className="text-6xl font-black text-white italic tracking-tighter mb-8">
-          {totalPot.toFixed(2)} <span className="text-2xl text-zinc-600">TON</span>
-        </h2>
-        
-        {/* Кнопка ставки (блокируется во время прокрутки) */}
-        <button 
-          onClick={handleJoin}
-          disabled={isRolling}
-          className={`w-full h-16 rounded-full font-black uppercase tracking-wider text-sm flex items-center justify-center gap-3 transition-all ${
-            isRolling 
-              ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' 
-              : 'bg-white text-black active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.1)]'
-          }`}
-        >
-          <Wallet size={18} /> {myBet === 0 ? 'Join Arena (0.5 TON)' : '+0.5 TON'}
-        </button>
-      </div>
-
-      {/* PLAYERS LIST */}
-      <div className="flex justify-between items-center mb-6 px-2">
-        <h3 className="text-xs font-black text-zinc-400 uppercase tracking-widest italic">Contenders</h3>
-        <span className="text-xs font-bold text-zinc-600 uppercase">{allPlayers.length} Players</span>
-      </div>
-
-      <div className="space-y-3">
-        {allPlayers.map((p) => {
-          // Математика: считаем шанс на победу для каждого
-          const chance = ((p.bet / totalPot) * 100).toFixed(1);
-          
-          return (
-            <div key={p.id} className={`bg-[#111112] border ${p.isMe ? 'border-[#0abab5]/40 shadow-[0_0_15px_rgba(10,186,181,0.1)]' : 'border-white/5'} rounded-[24px] p-4 flex items-center justify-between transition-all duration-500`}>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/10 bg-zinc-900 shrink-0">
-                  <img src={p.avatar} alt="av" className="w-full h-full object-cover opacity-80" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-sm text-white flex items-center gap-2">
-                    {p.name} {p.isMe && <span className="px-2 py-0.5 bg-[#0abab5] text-black text-[8px] font-black uppercase rounded-sm">You</span>}
-                  </h4>
-                  <span className={`text-[10px] font-bold uppercase tracking-widest ${p.isMe ? 'text-[#0abab5]' : 'text-zinc-500'}`}>
-                    Chance: {chance}%
-                  </span>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-black text-sm text-white">{p.bet.toFixed(2)} TON</p>
-              </div>
+      {/* КАРТОЧКА ПОБЕДЫ */}
+      {gameState === 'ended' && winner && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#111112] border border-white/10 rounded-[40px] p-10 w-full text-center animate-in zoom-in-95">
+            <Trophy size={64} className="mx-auto text-yellow-500 mb-6" />
+            <h2 className="text-3xl font-black text-white mb-2 uppercase italic">ПОБЕДА!</h2>
+            <p className="text-zinc-500 font-bold mb-6">Сорвал куш: {winner.name}</p>
+            
+            <div className="bg-black border border-white/5 text-white py-4 rounded-2xl text-3xl font-black mb-2 shadow-[0_0_30px_rgba(255,255,255,0.05)]">
+              +{prizePool.toFixed(2)} <span className="text-lg text-zinc-500">TON</span>
             </div>
-          );
-        })}
-      </div>
+            <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-8">С учетом комиссии системы</p>
 
+            <button 
+              onClick={() => { setGameState('betting'); setTimeLeft(30); }}
+              className="w-full bg-white text-black h-14 rounded-full font-black uppercase text-xs"
+            >
+              Следующий раунд
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Список участников */}
+      <div className="space-y-3">
+        {players.map(p => (
+          <div key={p.id} className="bg-[#111112] border border-white/5 rounded-2xl p-4 flex justify-between items-center">
+            <span className="font-bold text-white flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: p.color }} />
+              {p.name}
+            </span>
+            <div className="text-right">
+              <p className="text-white font-black">{p.bet} TON</p>
+              <p className="text-[10px] font-bold text-zinc-500 uppercase">{((p.bet/totalBank)*100).toFixed(1)}% Chance</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
