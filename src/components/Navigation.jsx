@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
-  Swords, 
-  Gem, 
+  Gamepad2, 
+  Gift, 
   Trophy, 
   GraduationCap, 
   Newspaper, 
   BookOpen, 
-  Calendar,
+  Star,
   User
 } from 'lucide-react';
 
@@ -19,108 +19,102 @@ const triggerHaptic = () => {
       navigator.vibrate(10);
     }
   } catch (error) {
-    // Безопасный фоллбэк, если HapticFeedback недоступен
+    // Безопасный фоллбэк
   }
 };
 
-const rootItems = [
-  { id: 'preview', label: 'Preview', icon: LayoutDashboard },
-  { id: 'arena', label: 'Arena', icon: Swords },
-  { id: 'booty', label: 'Booty', icon: Gem },
-  { id: 'rating', label: 'Rating', icon: Trophy },
-];
-
-const subItems = [
-  { id: 'academy', label: 'Academy', icon: GraduationCap },
-  { id: 'news', label: 'News', icon: Newspaper },
-  { id: 'guide', label: 'Guide', icon: BookOpen },
-  { id: 'season', label: 'Season', icon: Calendar },
-];
-
 const Navigation = ({ activeTab, setActiveTab }) => {
   const [isSubNavigation, setIsSubNavigation] = useState(false);
-  const [activeMainTab, setActiveMainTab] = useState('preview');
-  const [activeSubTab, setActiveSubTab] = useState('academy');
 
-  // Эффект для синхронизации внешнего стейта (если активна кнопка профиля и тд)
+  // Синхронизация, чтобы при возврате не ломался стейт
   useEffect(() => {
-    if (activeTab === 'profile') {
-      setActiveMainTab('profile');
+    if (activeTab === 'preview' && isSubNavigation) {
+      setIsSubNavigation(false);
     }
-  }, [activeTab]);
+  }, [activeTab, isSubNavigation]);
 
-  const handleItemClick = (id) => {
+  // Логика левой кнопки (Переключатель уровней)
+  const leftItem = isSubNavigation 
+    ? { id: 'academy', label: 'Academy', icon: GraduationCap }
+    : { id: 'preview', label: 'Preview', icon: LayoutDashboard };
+
+  // Логика центрального блока (3 кнопки)
+  const centerItems = isSubNavigation
+    ? [
+        { id: 'news', label: 'News', icon: Newspaper },
+        { id: 'guide', label: 'Guide', icon: BookOpen },
+        { id: 'season', label: 'Season', icon: Star },
+      ]
+    : [
+        { id: 'arena', label: 'Arena', icon: Gamepad2 },
+        { id: 'booty', label: 'Booty', icon: Gift },
+        { id: 'rating', label: 'Rating', icon: Trophy },
+      ];
+
+  const handleLeftClick = () => {
     triggerHaptic();
-
     if (!isSubNavigation) {
-      // Логика ROOT панели
-      if (id === 'preview') {
-        setIsSubNavigation(true);
-        setActiveMainTab('preview');
-        setActiveSubTab('academy');
-        setActiveTab('academy'); // Передаем активный экран в App.jsx
-      } else {
-        setActiveMainTab(id);
-        setActiveTab(id);
-      }
+      // Переходим в SUB
+      setIsSubNavigation(true);
+      setActiveTab('academy');
     } else {
-      // Логика SUB панели
-      if (id === 'academy') {
-        setIsSubNavigation(false);
-        setActiveMainTab('preview');
-        setActiveSubTab(null);
-        setActiveTab('preview'); // Возвращаемся на превью
-      } else {
-        setActiveSubTab(id);
-        setActiveTab(id);
-      }
+      // Возвращаемся в ROOT
+      setIsSubNavigation(false);
+      setActiveTab('preview');
     }
+  };
+
+  const handleCenterItemClick = (id) => {
+    triggerHaptic();
+    setActiveTab(id);
   };
 
   const handleProfileClick = () => {
     triggerHaptic();
     setActiveTab('profile');
-    setActiveMainTab('profile');
-    // Не сбрасываем isSubNavigation, чтобы при возврате из профиля остаться на нужном уровне
   };
 
-  const currentItems = isSubNavigation ? subItems : rootItems;
-  // Определяем, какой ID сейчас активен для подсветки
-  const currentActiveId = activeTab === 'profile' 
-    ? null 
-    : (isSubNavigation ? activeSubTab : activeMainTab);
-
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md z-50">
-      <div className="bg-[#0a0a0c]/80 backdrop-blur-xl border border-white/5 shadow-[0_20px_40px_rgba(0,0,0,0.8)] rounded-full p-2 flex items-center justify-between">
-        
-        {/* Контейнер кнопок (динамический) */}
-        <div className="flex items-center justify-around flex-1 relative mr-2">
-          {currentItems.map((item) => {
-            const isActive = currentActiveId === item.id;
+    <div className="fixed bottom-6 left-0 w-full px-4 flex items-center justify-center gap-2 z-50">
+      
+      {/* 1. ЛЕВАЯ КНОПКА (Отдельная) */}
+      <button
+        onClick={handleLeftClick}
+        className={`w-16 h-16 rounded-full flex-shrink-0 bg-[#161618] border border-white/5 flex flex-col items-center justify-center gap-1 transition-all duration-300 shadow-lg active:scale-95 ${
+          activeTab === leftItem.id ? 'text-[#0abab5]' : 'text-zinc-500 hover:text-zinc-400'
+        }`}
+      >
+        <leftItem.icon size={22} strokeWidth={activeTab === leftItem.id ? 2.5 : 2} />
+        <span className="text-[10px] font-bold tracking-wide">
+          {leftItem.label}
+        </span>
+      </button>
+
+      {/* 2. ЦЕНТРАЛЬНАЯ ПАНЕЛЬ (Капсула на 3 элемента) */}
+      <div className="flex-1 max-w-[280px] h-16 bg-[#161618] border border-white/5 rounded-full px-1.5 flex items-center shadow-lg relative overflow-hidden transition-all duration-300">
+        <div className="flex w-full items-center justify-between">
+          {centerItems.map((item) => {
+            const isActive = activeTab === item.id;
             const Icon = item.icon;
 
             return (
               <button
                 key={item.id}
-                onClick={() => handleItemClick(item.id)}
-                className={`flex flex-col items-center justify-center w-[4.5rem] h-14 rounded-full transition-all duration-300 relative ${
-                  isActive ? 'scale-100' : 'scale-95'
-                }`}
+                onClick={() => handleCenterItemClick(item.id)}
+                className="relative flex-1 h-[52px] flex flex-col items-center justify-center rounded-full transition-all duration-300 z-10 active:scale-95"
               >
-                {/* Активная капсула (Фон) */}
+                {/* Фон активного элемента (внутренняя капсула) */}
                 <div 
                   className={`absolute inset-0 rounded-full transition-all duration-300 ${
-                    isActive ? 'bg-[#0abab5]/10 opacity-100' : 'opacity-0'
-                  }`} 
+                    isActive ? 'bg-[#232328] shadow-[inset_0_1px_3px_rgba(0,0,0,0.5)]' : 'opacity-0'
+                  }`}
                 />
-
-                {/* Иконка и текст */}
-                <div className={`relative z-10 flex flex-col items-center gap-1 transition-colors duration-300 ${
+                
+                <div className={`relative z-20 flex flex-col items-center gap-1 transition-colors duration-300 ${
                   isActive ? 'text-[#0abab5]' : 'text-zinc-500 hover:text-zinc-400'
                 }`}>
-                  <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                  <span className="text-[9px] font-black uppercase tracking-wider">
+                  <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                  <span className="text-[10px] font-bold tracking-wide">
                     {item.label}
                   </span>
                 </div>
@@ -128,27 +122,21 @@ const Navigation = ({ activeTab, setActiveTab }) => {
             );
           })}
         </div>
-
-        {/* Разделитель */}
-        <div className="w-[1px] h-8 bg-white/5 mx-1" />
-
-        {/* Avatar Button (Всегда справа) */}
-        <button
-          onClick={handleProfileClick}
-          className={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${
-            activeTab === 'profile' 
-              ? 'border-[#0abab5] bg-[#0abab5]/10 shadow-[0_0_15px_rgba(10,186,181,0.2)]' 
-              : 'border-white/5 bg-[#111112] hover:bg-[#161618]'
-          }`}
-        >
-          {/* Если есть картинка профиля, вставь <img> сюда. Пока стоит иконка. */}
-          <User 
-            size={20} 
-            className={activeTab === 'profile' ? 'text-[#0abab5]' : 'text-zinc-400'} 
-          />
-        </button>
-
       </div>
+
+      {/* 3. ПРАВАЯ КНОПКА (Аватар с толстой обводкой) */}
+      <button
+        onClick={handleProfileClick}
+        className={`w-16 h-16 rounded-full flex-shrink-0 bg-[#161618] border border-white/5 p-1.5 transition-all duration-300 shadow-lg active:scale-95 ${
+          activeTab === 'profile' ? 'ring-2 ring-[#0abab5] ring-offset-2 ring-offset-[#0a0a0c]' : ''
+        }`}
+      >
+        <div className="w-full h-full rounded-full overflow-hidden bg-[#232328] flex items-center justify-center relative">
+          {/* Если есть фото профиля, меняем User на img */}
+          <User size={24} className={activeTab === 'profile' ? 'text-[#0abab5]' : 'text-zinc-400'} />
+        </div>
+      </button>
+
     </div>
   );
 };
