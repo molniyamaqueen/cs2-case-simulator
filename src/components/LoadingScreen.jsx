@@ -1,39 +1,53 @@
 import React from 'react';
-// Этот импорт заставляет Vite "увидеть" файл, где бы он ни лежал
+import { Building2 } from 'lucide-react';
 import beastImg from '../assets/splash.png';
 
 const LoadingScreen = () => {
   return (
     <div className="fixed inset-0 bg-[#0a0a0c] flex flex-col items-center justify-center z-[100]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#1a1a1d_0%,_#0a0a0c_70%)] opacity-90" />
+      {/* Фон без лишнего мусора */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#1a1a1d_0%,_#0a0a0c_70%)] opacity-95" />
 
-      <div className="relative flex flex-col items-center gap-10">
-        {/* Линза */}
-        <div className="relative w-64 h-64 rounded-full flex items-center justify-center shadow-[0_0_100px_rgba(0,0,0,0.6)]">
-          <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/15 to-transparent shadow-[inset_0_2px_4px_rgba(255,255,255,0.2)] border border-white/10 backdrop-blur-md z-10" />
+      <div className="relative flex flex-col items-center gap-16">
+        
+        {/* Линза ГЛАЗОК - БЕЗ БЛЮРА */}
+        <div className="relative w-64 h-64 rounded-full flex items-center justify-center shadow-[0_0_120px_rgba(0,0,0,1)]">
           
-          <div className="absolute inset-2 rounded-full overflow-hidden bg-[#0d0d0f] flex items-center justify-center">
+          {/* Стеклянный блик ПОВЕРХ картинки (z-30) */}
+          <div className="absolute inset-0 rounded-full z-30 pointer-events-none shadow-[inset_0_8px_16px_rgba(255,255,255,0.2),inset_0_-8px_20px_rgba(0,0,0,0.9)] border border-white/10" />
+          
+          {/* Жесткая Виньетка (затемнение краев для эффекта глазка) */}
+          <div className="absolute inset-0 rounded-full z-20 shadow-[inset_0_0_60px_rgba(0,0,0,1)] pointer-events-none" />
+
+          {/* ЧЕТКАЯ КАРТИНКА (z-10) */}
+          <div className="absolute inset-0 rounded-full overflow-hidden bg-black flex items-center justify-center z-10">
             <img 
               src={beastImg} 
-              alt="Loading Beast" 
-              className="w-full h-full object-cover animate-fadeIn"
-              onError={(e) => console.log("Ошибка загрузки: проверь путь к src/assets/splash.png")}
+              alt="Beast" 
+              className="w-full h-full object-cover"
             />
           </div>
         </div>
 
-        {/* Текст и точки */}
-        <div className="flex flex-col items-center gap-5">
-          <div className="flex gap-2.5">
-            <div className="w-2 h-2 rounded-full bg-blue-600 animate-bounce [animation-delay:-0.3s]" />
-            <div className="w-2 h-2 rounded-full bg-blue-600 animate-bounce [animation-delay:-0.15s]" />
-            <div className="w-2 h-2 rounded-full bg-blue-600 animate-bounce" />
+        {/* ТОЛЬКО ПРЫГАЮЩИЕ ЗДАНИЯ - НИКАКИХ КРУГОВ */}
+        <div className="flex items-end gap-6 h-12">
+          <div className="animate-bounce [animation-duration:0.6s] [animation-delay:-0.3s]">
+            <Building2 size={38} className="text-white opacity-40" />
           </div>
-          <span className="text-zinc-500 text-[11px] font-black uppercase tracking-[0.5em] ml-[0.5em]">
-            Connecting
-          </span>
+          <div className="animate-bounce [animation-duration:0.6s] [animation-delay:-0.15s]">
+            <Building2 size={52} className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]" />
+          </div>
+          <div className="animate-bounce [animation-duration:0.6s]">
+            <Building2 size={38} className="text-white opacity-40" />
+          </div>
         </div>
+      </div>
+
+      {/* Брендинг */}
+      <div className="absolute bottom-12 w-full text-center">
+        <span className="text-zinc-900 text-[11px] font-black uppercase tracking-[0.7em]">
+          Santa Lucia
+        </span>
       </div>
     </div>
   );
