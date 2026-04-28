@@ -7,8 +7,7 @@ import {
   GraduationCap, 
   Newspaper, 
   BookOpen, 
-  Star,
-  User
+  Star
 } from 'lucide-react';
 
 const triggerHaptic = () => {
@@ -18,53 +17,57 @@ const triggerHaptic = () => {
     } else if (navigator.vibrate) {
       navigator.vibrate(10);
     }
-  } catch (error) {
-    // Безопасный фоллбэк
-  }
+  } catch (error) {}
 };
 
 const Navigation = ({ activeTab, setActiveTab }) => {
   const [isSubNavigation, setIsSubNavigation] = useState(false);
+  // Ставим дефолтную картинку с горами (как на твоем скрине) на случай, если ТГ не отдаст фотку
+  const [avatarUrl, setAvatarUrl] = useState("https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=150&q=80");
 
-  // Синхронизация, чтобы при возврате не ломался стейт
+  useEffect(() => {
+    try {
+      const tgUrl = window?.Telegram?.WebApp?.initDataUnsafe?.user?.photo_url;
+      if (tgUrl) setAvatarUrl(tgUrl);
+    } catch (error) {}
+  }, []);
+
+  // Синхронизация при внешних переключениях
   useEffect(() => {
     if (activeTab === 'preview' && isSubNavigation) {
       setIsSubNavigation(false);
     }
   }, [activeTab, isSubNavigation]);
 
-  // Логика левой кнопки (Переключатель уровней)
+  // --- ЛОГИКА И ЦВЕТА ---
   const leftItem = isSubNavigation 
-    ? { id: 'academy', label: 'Academy', icon: GraduationCap }
-    : { id: 'preview', label: 'Preview', icon: LayoutDashboard };
+    ? { id: 'academy', label: 'Academy', icon: GraduationCap, color: 'text-[#ff4b4b]' }
+    : { id: 'preview', label: 'Preview', icon: LayoutDashboard, color: 'text-[#00e5c0]' };
 
-  // Логика центрального блока (3 кнопки)
   const centerItems = isSubNavigation
     ? [
-        { id: 'news', label: 'News', icon: Newspaper },
-        { id: 'guide', label: 'Guide', icon: BookOpen },
-        { id: 'season', label: 'Season', icon: Star },
+        { id: 'news', label: 'News', icon: Newspaper, color: 'text-[#00e5c0]' },
+        { id: 'guide', label: 'Guide', icon: BookOpen, color: 'text-[#b25cff]' },
+        { id: 'season', label: 'Season', icon: Star, color: 'text-[#ffd700]' },
       ]
     : [
-        { id: 'arena', label: 'Arena', icon: Gamepad2 },
-        { id: 'booty', label: 'Booty', icon: Gift },
-        { id: 'rating', label: 'Rating', icon: Trophy },
+        { id: 'arena', label: 'Arena', icon: Gamepad2, color: 'text-[#b25cff]' },
+        { id: 'booty', label: 'Booty', icon: Gift, color: 'text-[#0088ff]' },
+        { id: 'rating', label: 'Rating', icon: Trophy, color: 'text-[#ffd700]' },
       ];
 
   const handleLeftClick = () => {
     triggerHaptic();
     if (!isSubNavigation) {
-      // Переходим в SUB
       setIsSubNavigation(true);
       setActiveTab('academy');
     } else {
-      // Возвращаемся в ROOT
       setIsSubNavigation(false);
       setActiveTab('preview');
     }
   };
 
-  const handleCenterItemClick = (id) => {
+  const handleCenterClick = (id) => {
     triggerHaptic();
     setActiveTab(id);
   };
@@ -74,66 +77,74 @@ const Navigation = ({ activeTab, setActiveTab }) => {
     setActiveTab('profile');
   };
 
+  const isLeftActive = activeTab === leftItem.id;
+
   return (
-    <div className="fixed bottom-6 left-0 w-full px-4 flex items-center justify-center gap-2 z-50">
+    <div className="fixed bottom-6 left-0 w-full px-4 flex items-center justify-between gap-2 z-50">
       
-      {/* 1. ЛЕВАЯ КНОПКА (Отдельная) */}
+      {/* 1. ЛЕВАЯ КНОПКА (Переключатель) */}
       <button
         onClick={handleLeftClick}
-        className={`w-16 h-16 rounded-full flex-shrink-0 bg-[#161618] border border-white/5 flex flex-col items-center justify-center gap-1 transition-all duration-300 shadow-lg active:scale-95 ${
-          activeTab === leftItem.id ? 'text-[#0abab5]' : 'text-zinc-500 hover:text-zinc-400'
-        }`}
+        className="w-[68px] h-[68px] shrink-0 bg-[#111112] border border-white/5 rounded-full flex flex-col items-center justify-center gap-1 shadow-2xl transition-all duration-300 active:scale-95 relative overflow-hidden"
       >
-        <leftItem.icon size={22} strokeWidth={activeTab === leftItem.id ? 2.5 : 2} />
-        <span className="text-[10px] font-bold tracking-wide">
+        {/* Эффект стеклянной линзы для левой кнопки */}
+        {isLeftActive && (
+          <div className="absolute inset-0 rounded-full -z-10 bg-gradient-to-b from-white/[0.08] to-transparent shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),inset_0_-2px_4px_rgba(0,0,0,0.4)] backdrop-blur-md border border-white/5" />
+        )}
+        
+        <leftItem.icon 
+          size={22} 
+          className={isLeftActive ? leftItem.color : 'text-[#666666]'} 
+          style={isLeftActive ? { filter: 'drop-shadow(0 0 6px currentColor)' } : {}}
+        />
+        <span className={`text-[10px] font-medium tracking-wide ${isLeftActive ? leftItem.color : 'text-[#666666]'}`}>
           {leftItem.label}
         </span>
       </button>
 
-      {/* 2. ЦЕНТРАЛЬНАЯ ПАНЕЛЬ (Капсула на 3 элемента) */}
-      <div className="flex-1 max-w-[280px] h-16 bg-[#161618] border border-white/5 rounded-full px-1.5 flex items-center shadow-lg relative overflow-hidden transition-all duration-300">
-        <div className="flex w-full items-center justify-between">
-          {centerItems.map((item) => {
-            const isActive = activeTab === item.id;
-            const Icon = item.icon;
+      {/* 2. ЦЕНТРАЛЬНАЯ КАПСУЛА (3 элемента) */}
+      <div className="flex-1 h-[68px] bg-[#111112] border border-white/5 rounded-full p-1.5 flex items-center shadow-2xl">
+        {centerItems.map((item) => {
+          const isActive = activeTab === item.id;
+          const Icon = item.icon;
 
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleCenterItemClick(item.id)}
-                className="relative flex-1 h-[52px] flex flex-col items-center justify-center rounded-full transition-all duration-300 z-10 active:scale-95"
-              >
-                {/* Фон активного элемента (внутренняя капсула) */}
-                <div 
-                  className={`absolute inset-0 rounded-full transition-all duration-300 ${
-                    isActive ? 'bg-[#232328] shadow-[inset_0_1px_3px_rgba(0,0,0,0.5)]' : 'opacity-0'
-                  }`}
-                />
-                
-                <div className={`relative z-20 flex flex-col items-center gap-1 transition-colors duration-300 ${
-                  isActive ? 'text-[#0abab5]' : 'text-zinc-500 hover:text-zinc-400'
-                }`}>
-                  <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-                  <span className="text-[10px] font-bold tracking-wide">
-                    {item.label}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleCenterClick(item.id)}
+              className="flex-1 h-full flex flex-col items-center justify-center rounded-full relative z-10 transition-all duration-300 active:scale-95"
+            >
+              {/* Эффект стеклянной линзы для центральных кнопок */}
+              {isActive && (
+                <div className="absolute inset-0 rounded-full -z-10 bg-gradient-to-b from-white/[0.08] to-transparent shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),inset_0_-2px_4px_rgba(0,0,0,0.4)] backdrop-blur-md border border-white/5" />
+              )}
+              
+              <Icon 
+                size={22} 
+                className={isActive ? item.color : 'text-[#666666]'} 
+                style={isActive ? { filter: 'drop-shadow(0 0 6px currentColor)' } : {}}
+              />
+              <span className={`text-[10px] font-medium tracking-wide mt-1 ${isActive ? item.color : 'text-[#666666]'}`}>
+                {item.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* 3. ПРАВАЯ КНОПКА (Аватар с толстой обводкой) */}
+      {/* 3. ПРАВАЯ КНОПКА (Аватар профиля) */}
       <button
         onClick={handleProfileClick}
-        className={`w-16 h-16 rounded-full flex-shrink-0 bg-[#161618] border border-white/5 p-1.5 transition-all duration-300 shadow-lg active:scale-95 ${
-          activeTab === 'profile' ? 'ring-2 ring-[#0abab5] ring-offset-2 ring-offset-[#0a0a0c]' : ''
+        className={`w-[68px] h-[68px] shrink-0 bg-[#111112] border border-white/5 rounded-full p-1.5 shadow-2xl transition-all duration-300 active:scale-95 ${
+          activeTab === 'profile' ? 'ring-2 ring-[#0088ff] ring-offset-2 ring-offset-[#0a0a0c]' : ''
         }`}
       >
-        <div className="w-full h-full rounded-full overflow-hidden bg-[#232328] flex items-center justify-center relative">
-          {/* Если есть фото профиля, меняем User на img */}
-          <User size={24} className={activeTab === 'profile' ? 'text-[#0abab5]' : 'text-zinc-400'} />
+        <div className="w-full h-full rounded-full overflow-hidden bg-[#1c1c1e] relative">
+          <img 
+            src={avatarUrl} 
+            alt="Avatar" 
+            className={`w-full h-full object-cover transition-all duration-300 ${activeTab === 'profile' ? 'opacity-100' : 'opacity-80 hover:opacity-100'}`}
+          />
         </div>
       </button>
 
