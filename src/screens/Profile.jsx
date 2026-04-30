@@ -1,223 +1,201 @@
-import React, { useState } from 'react';
-import { 
-  Settings, ChevronRight, X, Gem, Wallet, 
-  Twitter, Video, Send, Check
-} from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Settings, ChevronRight, X, Gem, Wallet, Twitter, Video, Send } from 'lucide-react';
+import { translations } from '../utils/translations';
 
 const Profile = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [currentLang, setCurrentLang] = useState('EN');
+  const [user, setUser] = useState({
+    username: 'Guest',
+    avatar: 'https://ui-avatars.com/api/?name=G&background=222&color=fff'
+  });
 
-  // Моковые данные юзера (потом заменим на данные из Telegram)
-  const tgUser = {
-    username: 'ebaldremal1448',
-    avatar: 'https://i.pravatar.cc/150?img=11'
-  };
+  // Хелпер для перевода
+  const t = (key) => translations[currentLang]?.[key] || translations['EN'][key];
+
+  // Тянем реальные данные ТГ
+  useEffect(() => {
+    const tg = window.Telegram?.WebApp;
+    if (tg?.initDataUnsafe?.user) {
+      const u = tg.initDataUnsafe.user;
+      setUser({
+        username: u.username || u.first_name || 'User',
+        avatar: u.photo_url || `https://ui-avatars.com/api/?name=${u.first_name}&background=random`
+      });
+    }
+  }, []);
+
+  const langOptions = [
+    { code: 'EN', flag: '🇺🇸' }, { code: 'RU', flag: '🇷🇺' }, { code: 'UA', flag: '🇺🇦' },
+    { code: 'KR', flag: '🇰🇷' }, { code: 'ZH', flag: '🇨🇳' }, { code: 'FA', flag: '🇮🇷' }
+  ];
 
   return (
-    <div className="w-full flex flex-col gap-6 font-sans">
+    <div className="w-full flex flex-col gap-4 font-sans animate-fadeIn select-none">
       
-      {/* HEADER */}
-      <div className="flex items-center justify-between mt-2">
+      {/* HEADER: Компактный и чистый */}
+      <div className="flex items-center justify-between px-1">
         <button 
           onClick={() => setIsMenuOpen(true)}
-          className="p-2.5 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors"
+          className="p-2.5 bg-white/5 active:bg-white/10 rounded-2xl transition-all"
         >
-          <Settings size={22} className="text-white" />
+          <Settings size={18} className="text-zinc-400" />
         </button>
-        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-2xl">
-          <Gem size={16} className="text-blue-400" />
-          <span className="text-white font-bold text-sm">0 TON</span>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1c1c1e] border border-white/5 rounded-xl">
+          <Gem size={14} className="text-blue-400" />
+          <span className="text-white font-black text-[10px] tracking-wider uppercase">0 TON</span>
         </div>
       </div>
 
-      {/* MAIN USER CARD */}
-      <div className="relative overflow-hidden bg-white rounded-[2rem] p-6 shadow-2xl">
-        {/* Радужные мутные шарики (Паттерн) */}
-        <div className="absolute top-[-20%] left-[-10%] w-40 h-40 bg-pink-400/40 blur-[40px] rounded-full mix-blend-multiply" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-48 h-48 bg-blue-400/40 blur-[40px] rounded-full mix-blend-multiply" />
-        <div className="absolute top-[30%] left-[40%] w-32 h-32 bg-yellow-300/40 blur-[40px] rounded-full mix-blend-multiply" />
+      {/* MAIN CARD: Уменьшенные отступы и тонкие блики */}
+      <div className="relative overflow-hidden bg-white rounded-[2.2rem] p-4 shadow-xl">
+        <div className="absolute top-2 left-4 w-12 h-12 bg-pink-300/20 blur-[30px] rounded-full" />
+        <div className="absolute bottom-2 right-6 w-16 h-16 bg-blue-300/20 blur-[40px] rounded-full" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-yellow-200/10 blur-[25px] rounded-full" />
         
         <div className="relative z-10 flex flex-col items-center">
           <img 
-            src={tgUser.avatar} 
+            src={user.avatar} 
             alt="Avatar" 
-            className="w-20 h-20 rounded-[1.5rem] object-cover shadow-md border-2 border-white/50 mb-3"
+            className="w-14 h-14 rounded-[1.2rem] object-cover border-[1.5px] border-white shadow-sm mb-2"
           />
-          <h2 className="text-xl font-black text-zinc-900 mb-6">@{tgUser.username}</h2>
+          <h2 className="text-base font-black text-zinc-900 mb-5 tracking-tight">@{user.username}</h2>
           
-          <div className="flex w-full justify-between px-4 mb-6">
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-2xl font-black text-zinc-900">0</span>
-              <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Requests</span>
+          <div className="flex w-full justify-around mb-5">
+            <div className="flex flex-col items-center">
+              <span className="text-lg font-black text-zinc-900 leading-none">0</span>
+              <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest mt-1">{t('requests')}</span>
             </div>
-            <div className="w-px h-10 bg-zinc-200" />
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-2xl font-black text-zinc-900">0 TON</span>
-              <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Best win</span>
+            <div className="w-px h-6 bg-zinc-100 self-center" />
+            <div className="flex flex-col items-center">
+              <span className="text-lg font-black text-zinc-900 leading-none">0 TON</span>
+              <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest mt-1">{t('bestWin')}</span>
             </div>
           </div>
 
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-zinc-900/5 hover:bg-zinc-900/10 rounded-2xl transition-colors">
-            <span className="text-sm font-bold text-zinc-800">Result</span>
-            <ChevronRight size={16} className="text-zinc-600" />
+          <button className="flex items-center gap-1 px-3.5 py-1.5 bg-zinc-100/60 rounded-xl hover:bg-zinc-200/60 transition-colors">
+            <span className="text-[10px] font-black text-zinc-800">{t('result')}</span>
+            <ChevronRight size={12} className="text-zinc-400" />
           </button>
         </div>
       </div>
 
-      {/* OPTIONS */}
-      <div className="flex items-center justify-between px-2">
-        <h3 className="text-xl font-bold text-white tracking-tight">Options</h3>
-        <button className="px-6 py-2.5 bg-white hover:bg-zinc-200 text-zinc-900 font-black rounded-full text-sm transition-colors shadow-[0_0_20px_rgba(255,255,255,0.2)]">
-          Deposit
+      {/* OPTIONS BAR */}
+      <div className="flex items-center justify-between px-2 mt-1">
+        <h3 className="text-base font-black text-white">{t('options')}</h3>
+        <button className="px-5 py-1.5 bg-white text-black font-black rounded-xl text-[10px] uppercase shadow-lg shadow-white/5 active:scale-95 transition-transform">
+          {t('deposit')}
         </button>
       </div>
 
-      {/* REFERRAL CARD */}
-      <div className="relative overflow-hidden bg-white rounded-[2rem] p-6 shadow-2xl mb-4">
-        {/* Радужные шарики */}
-        <div className="absolute top-0 right-0 w-40 h-40 bg-purple-400/30 blur-[40px] rounded-full mix-blend-multiply" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-32 h-32 bg-orange-400/30 blur-[40px] rounded-full mix-blend-multiply" />
+      {/* REFERRAL CARD: Компактная версия */}
+      <div className="relative overflow-hidden bg-white rounded-[2.2rem] p-4 shadow-xl">
+        <div className="absolute top-0 right-0 w-16 h-16 bg-purple-200/30 blur-[30px] rounded-full" />
         
-        <div className="relative z-10 flex flex-col gap-5">
-          <div className="flex justify-between items-center bg-zinc-900/5 px-4 py-3 rounded-2xl">
-            <span className="font-bold text-zinc-900">Level 1</span>
-            <span className="font-black text-blue-600 bg-blue-100 px-3 py-1 rounded-xl text-sm">5%</span>
+        <div className="relative z-10 flex flex-col gap-3">
+          <div className="flex justify-between items-center bg-zinc-50/80 p-2.5 rounded-xl border border-zinc-100/50">
+            <span className="text-[11px] font-black text-zinc-900">{t('level')} 1</span>
+            <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">5%</span>
           </div>
 
-          <div className="flex gap-3">
-            <div className="flex-1 bg-zinc-900/5 p-4 rounded-2xl flex flex-col gap-1">
-              <div className="flex items-center gap-1.5 mb-1">
-                <Wallet size={14} className="text-zinc-500" />
-                <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Earned</span>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-zinc-50/80 p-3 rounded-xl border border-zinc-100/50">
+              <div className="flex items-center gap-1 mb-0.5">
+                <Wallet size={10} className="text-zinc-400" />
+                <span className="text-[8px] font-black text-zinc-400 uppercase">{t('earned')}</span>
               </div>
-              <span className="text-lg font-black text-zinc-900">0 TON</span>
+              <span className="text-xs font-black text-zinc-900 uppercase">0 TON</span>
             </div>
-            <div className="flex-1 bg-zinc-900/5 p-4 rounded-2xl flex flex-col gap-1">
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Friends</span>
-              </div>
-              <span className="text-lg font-black text-zinc-900">1</span>
+            <div className="bg-zinc-50/80 p-3 rounded-xl border border-zinc-100/50">
+              <div className="text-[8px] font-black text-zinc-400 uppercase mb-0.5">{t('friends')}</div>
+              <span className="text-xs font-black text-zinc-900">1</span>
             </div>
           </div>
 
-          <button className="w-full py-4 bg-zinc-900 active:scale-95 text-white font-black text-lg rounded-[1.5rem] transition-all shadow-xl">
-            Invite friends +
+          <button className="w-full py-3 bg-zinc-900 text-white font-black text-xs uppercase tracking-wider rounded-xl active:scale-95 transition-all shadow-md">
+            {t('invite')}
           </button>
         </div>
       </div>
 
-      {/* БОКОВОЕ МЕНЮ (ШТОРКА НАСТРОЕК) */}
-      {isMenuOpen && <SettingsBottomSheet onClose={() => setIsMenuOpen(false)} />}
-
-    </div>
-  );
-};
-
-// --- КОМПОНЕНТ ШТОРКИ НАСТРОЕК ---
-const SettingsBottomSheet = ({ onClose }) => {
-  const [tactile, setTactile] = useState(true);
-  const [animated, setAnimated] = useState(true);
-  
-  const languages = ['EN', 'RU', 'KR', 'ZH', 'UA', 'FA'];
-
-  return (
-    <div className="fixed inset-0 z-50 flex flex-col justify-end">
-      {/* Затемнение фона */}
-      <div 
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fadeIn" 
-        onClick={onClose}
-      />
-      
-      {/* Сама шторка */}
-      <div className="relative w-full max-w-md mx-auto bg-[#1c1c1e] rounded-t-[2.5rem] px-6 pt-6 pb-12 flex flex-col gap-6 animate-slideUp border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
-        
-        {/* Шапка шторки */}
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-2xl font-black text-white">Menu</h2>
-          <button onClick={onClose} className="p-2 bg-white/10 rounded-full active:bg-white/20">
-            <X size={20} className="text-white" />
-          </button>
-        </div>
-
-        {/* Языки */}
-        <div className="flex flex-col gap-3">
-          <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest pl-1">Language</span>
-          <div className="flex flex-wrap gap-2">
-            {languages.map((lang) => (
-              <button 
-                key={lang}
-                className={`px-5 py-2.5 rounded-2xl text-sm font-bold transition-colors ${
-                  lang === 'EN' 
-                    ? 'bg-white text-black shadow-lg' 
-                    : 'bg-white/5 text-zinc-400 border border-white/5'
-                }`}
-              >
-                {lang}
+      {/* BOTTOM SHEET MENU */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-[100] flex flex-col justify-end">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" onClick={() => setIsMenuOpen(false)} />
+          <div className="relative w-full max-w-md mx-auto bg-[#111112] rounded-t-[2.5rem] px-6 pt-4 pb-12 border-t border-white/5 animate-slideUp">
+            <div className="w-10 h-1 bg-white/10 rounded-full mx-auto mb-6" />
+            
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-black text-white">{t('menu')}</h2>
+              <button onClick={() => setIsMenuOpen(false)} className="p-2 bg-white/5 rounded-full active:bg-white/10 text-zinc-400">
+                <X size={18} />
               </button>
-            ))}
+            </div>
+
+            {/* LANGUAGES WITH FLAGS */}
+            <div className="flex flex-col gap-3 mb-8">
+              <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em]">{t('language')}</span>
+              <div className="grid grid-cols-3 gap-2">
+                {langOptions.map((l) => (
+                  <button 
+                    key={l.code}
+                    onClick={() => setCurrentLang(l.code)}
+                    className={`flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black transition-all border ${
+                      currentLang === l.code 
+                        ? 'bg-white text-black border-white shadow-lg' 
+                        : 'bg-white/5 text-zinc-500 border-white/5 active:bg-white/10'
+                    }`}
+                  >
+                    <span className="text-sm">{l.flag}</span>
+                    <span>{l.code}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* IOS STYLE SWITCHES */}
+            <div className="flex flex-col gap-5 mb-8">
+              <SwitchRow label={t('tactile')} active={true} />
+              <SwitchRow label={t('animated')} active={true} />
+            </div>
+
+            {/* LINKS SECTION */}
+            <div className="flex flex-col gap-2 mb-8">
+              <SocialLink icon={<Twitter size={16} />} label="X (Twitter)" color="text-blue-400" />
+              <SocialLink icon={<Video size={16} />} label="TikTok" color="text-pink-400" />
+              <SocialLink icon={<Send size={16} />} label="Channel" color="text-cyan-400" />
+            </div>
+
+            {/* FOOTER BUTTONS */}
+            <div className="flex gap-2">
+              <button className="flex-1 py-3.5 bg-white/5 text-zinc-400 font-bold rounded-2xl text-[10px] uppercase tracking-widest">{t('privacy')}</button>
+              <button className="flex-[2] py-3.5 bg-blue-500 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/20">{t('contact')}</button>
+            </div>
           </div>
         </div>
-
-        {/* Тумблеры */}
-        <div className="flex flex-col gap-5 mt-2">
-          <div className="flex justify-between items-center">
-            <span className="font-bold text-white">Tactile Response</span>
-            <button 
-              onClick={() => setTactile(!tactile)}
-              className={`w-14 h-8 rounded-full relative transition-colors duration-300 ${tactile ? 'bg-blue-500' : 'bg-white/10'}`}
-            >
-              <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform duration-300 shadow-md ${tactile ? 'left-7' : 'left-1'}`} />
-            </button>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="font-bold text-white">Animated Gifts</span>
-            <button 
-              onClick={() => setAnimated(!animated)}
-              className={`w-14 h-8 rounded-full relative transition-colors duration-300 ${animated ? 'bg-blue-500' : 'bg-white/10'}`}
-            >
-              <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform duration-300 shadow-md ${animated ? 'left-7' : 'left-1'}`} />
-            </button>
-          </div>
-        </div>
-
-        {/* Навигация (Ссылки) */}
-        <div className="flex flex-col gap-2 mt-2 bg-white/5 p-2 rounded-[2rem]">
-          <button className="flex items-center justify-between p-3 px-4 hover:bg-white/5 active:bg-white/10 rounded-2xl transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-xl"><Twitter size={18} className="text-blue-400" /></div>
-              <span className="font-bold text-white">X (Twitter)</span>
-            </div>
-            <ChevronRight size={20} className="text-zinc-600" />
-          </button>
-          <button className="flex items-center justify-between p-3 px-4 hover:bg-white/5 active:bg-white/10 rounded-2xl transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-pink-500/10 rounded-xl"><Video size={18} className="text-pink-400" /></div>
-              <span className="font-bold text-white">TikTok</span>
-            </div>
-            <ChevronRight size={20} className="text-zinc-600" />
-          </button>
-          <button className="flex items-center justify-between p-3 px-4 hover:bg-white/5 active:bg-white/10 rounded-2xl transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-cyan-500/10 rounded-xl"><Send size={18} className="text-cyan-400" /></div>
-              <span className="font-bold text-white">Channel</span>
-            </div>
-            <ChevronRight size={20} className="text-zinc-600" />
-          </button>
-        </div>
-
-        {/* Подвал */}
-        <div className="flex gap-3 mt-4">
-          <button className="flex-1 py-4 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white font-bold rounded-[1.5rem] transition-colors">
-            Privacy
-          </button>
-          <button className="flex-[2] py-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-black rounded-[1.5rem] shadow-lg shadow-blue-500/20 transition-all">
-            Contact the Team
-          </button>
-        </div>
-
-      </div>
+      )}
     </div>
   );
 };
+
+// Вспомогательные компоненты для чистоты кода
+const SwitchRow = ({ label, active }) => (
+  <div className="flex justify-between items-center">
+    <span className="text-xs font-bold text-white tracking-tight">{label}</span>
+    <div className={`w-10 h-5 rounded-full relative transition-colors ${active ? 'bg-blue-500' : 'bg-zinc-700'}`}>
+      <div className={`absolute top-0.5 right-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${active ? 'translate-x-0' : '-translate-x-5'}`} />
+    </div>
+  </div>
+);
+
+const SocialLink = ({ icon, label, color }) => (
+  <div className="flex items-center justify-between p-3.5 bg-white/[0.02] border border-white/5 rounded-2xl active:bg-white/5 transition-colors">
+    <div className="flex items-center gap-3">
+      <div className={`${color} bg-white/5 p-1.5 rounded-lg`}>{icon}</div>
+      <span className="text-[11px] font-bold text-white">{label}</span>
+    </div>
+    <ChevronRight size={14} className="text-zinc-600" />
+  </div>
+);
 
 export default Profile;
