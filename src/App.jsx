@@ -1,169 +1,103 @@
-import React from 'react';
-import { 
-  ShieldCheck, Brain, TrendingUp, Youtube, Twitter, Video,
-  Gamepad2, Gift, Trophy, Newspaper, BookOpen, Flame
-} from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import LoadingScreen from './components/LoadingScreen';
+import Navigation from './components/Navigation';
 
-const Preview = () => {
-  return (
-    <div className="flex flex-col gap-8 pb-10 animate-fadeIn font-sans w-full">
-      
-      {/* HEADER SECTION */}
-      <div className="flex flex-col items-center text-center gap-5 mt-8 px-2">
-        <h1 className="text-3xl font-black leading-[1.1] tracking-tight text-white max-w-[90%]">
-          Сообщество для становления и развития <br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-400">
-            CS2 трейдеров
-          </span>
-        </h1>
-        <p className="text-sm text-zinc-500 font-medium leading-relaxed max-w-[85%]">
-          Academy — это экосистема трейдеров и ИИ, где ваши знания превращаются в реальную прибыль.
-        </p>
-      </div>
+import Preview from './screens/Preview';
+import Arena from './screens/Arena';
 
-      {/* CORE FEATURES (Главные фичи) */}
-      <div className="flex flex-col gap-3 mt-2">
-        <h2 className="text-lg font-bold text-white px-1">Направления Академии</h2>
-        
-        <div className="p-5 bg-[#111112] border border-white/5 rounded-[2rem] flex items-start gap-4">
-          <div className="p-2.5 bg-blue-500/10 rounded-2xl shrink-0">
-            <TrendingUp size={22} className="text-blue-500" />
-          </div>
-          <div>
-            <h3 className="text-white font-bold text-[15px] mb-1.5">Аналитика рынка</h3>
-            <p className="text-xs text-zinc-500 leading-normal">Глубокий анализ паттернов, отслеживание актуальных трендов и поиск недооцененных активов.</p>
-          </div>
-        </div>
-        
-        <div className="p-5 bg-[#111112] border border-white/5 rounded-[2rem] flex items-start gap-4">
-          <div className="p-2.5 bg-purple-500/10 rounded-2xl shrink-0">
-            <Brain size={22} className="text-purple-500" />
-          </div>
-          <div>
-            <h3 className="text-white font-bold text-[15px] mb-1.5">ИИ-ассистент</h3>
-            <p className="text-xs text-zinc-500 leading-normal">Продвинутые алгоритмы машинного обучения для оценки вероятностей и автоматизации рутины.</p>
-          </div>
-        </div>
-      </div>
-
-      {/* PLATFORM MODULES (Сетка разделов) */}
-      <div className="flex flex-col gap-3">
-        <h2 className="text-lg font-bold text-white px-1">Экосистема платформы</h2>
-        
-        <div className="grid grid-cols-2 gap-3">
-          {/* Арена */}
-          <div className="p-4 bg-[#111112] border border-white/5 rounded-[1.5rem] flex flex-col gap-3">
-            <div className="p-2 bg-emerald-500/10 rounded-xl w-fit">
-              <Gamepad2 size={18} className="text-emerald-500" />
-            </div>
-            <div>
-              <h3 className="text-white font-bold text-sm mb-1">Арена</h3>
-              <p className="text-[10px] text-zinc-500 leading-relaxed">Кейсы и симуляции с доказуемой честностью.</p>
-            </div>
-          </div>
-
-          {/* Booty (Призы) */}
-          <div className="p-4 bg-[#111112] border border-white/5 rounded-[1.5rem] flex flex-col gap-3">
-            <div className="p-2 bg-amber-500/10 rounded-xl w-fit">
-              <Gift size={18} className="text-amber-500" />
-            </div>
-            <div>
-              <h3 className="text-white font-bold text-sm mb-1">Призы</h3>
-              <p className="text-[10px] text-zinc-500 leading-relaxed">Обмен поинтов на реальные скины и бонусы.</p>
-            </div>
-          </div>
-
-          {/* Рейтинг */}
-          <div className="p-4 bg-[#111112] border border-white/5 rounded-[1.5rem] flex flex-col gap-3">
-            <div className="p-2 bg-blue-500/10 rounded-xl w-fit">
-              <Trophy size={18} className="text-blue-500" />
-            </div>
-            <div>
-              <h3 className="text-white font-bold text-sm mb-1">Рейтинг</h3>
-              <p className="text-[10px] text-zinc-500 leading-relaxed">Глобальный ладдер трейдеров и конкуренция.</p>
-            </div>
-          </div>
-
-          {/* Сезон */}
-          <div className="p-4 bg-[#111112] border border-white/5 rounded-[1.5rem] flex flex-col gap-3">
-            <div className="p-2 bg-rose-500/10 rounded-xl w-fit">
-              <Flame size={18} className="text-rose-500" />
-            </div>
-            <div>
-              <h3 className="text-white font-bold text-sm mb-1">Сезоны</h3>
-              <p className="text-[10px] text-zinc-500 leading-relaxed">Ивенты с уникальным пулом наград и дропом.</p>
-            </div>
-          </div>
-
-          {/* Гайды */}
-          <div className="p-4 bg-[#111112] border border-white/5 rounded-[1.5rem] flex flex-col gap-3">
-            <div className="p-2 bg-indigo-500/10 rounded-xl w-fit">
-              <BookOpen size={18} className="text-indigo-500" />
-            </div>
-            <div>
-              <h3 className="text-white font-bold text-sm mb-1">Гайды</h3>
-              <p className="text-[10px] text-zinc-500 leading-relaxed">Структурированная база знаний от 0 до PRO.</p>
-            </div>
-          </div>
-
-          {/* Новости */}
-          <div className="p-4 bg-[#111112] border border-white/5 rounded-[1.5rem] flex flex-col gap-3">
-            <div className="p-2 bg-cyan-500/10 rounded-xl w-fit">
-              <Newspaper size={18} className="text-cyan-500" />
-            </div>
-            <div>
-              <h3 className="text-white font-bold text-sm mb-1">Новости</h3>
-              <p className="text-[10px] text-zinc-500 leading-relaxed">Главные инсайды и важные события рынка.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ABOUT & ARENA FAIRNESS */}
-      <div className="flex flex-col gap-4 mt-2">
-        <div className="p-6 bg-gradient-to-b from-[#111112] to-transparent border border-white/10 rounded-[2.5rem] relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-[60px] rounded-full" />
-          
-          <div className="relative z-10 flex flex-col gap-6">
-            <div>
-              <h3 className="text-white font-bold text-sm flex items-center gap-2 mb-3">
-                <ShieldCheck size={18} className="text-blue-500" />
-                Прозрачная математика
-              </h3>
-              <p className="text-[13px] text-zinc-400 leading-relaxed">
-                Все механики платформы построены на криптографически защищенном генераторе (Provably Fair). Вы всегда можете проверить честность любого результата.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* SOCIAL BUTTONS */}
-      <div className="grid grid-cols-3 gap-3 mt-2">
-        <button className="flex flex-col items-center justify-center gap-2 py-4 bg-[#111112] border border-white/5 rounded-2xl active:bg-white/10 transition-colors">
-          <Video size={20} className="text-white" />
-          <span className="text-[10px] font-black uppercase tracking-tighter">TikTok</span>
-        </button>
-        <button className="flex flex-col items-center justify-center gap-2 py-4 bg-[#111112] border border-white/5 rounded-2xl active:bg-white/10 transition-colors">
-          <Youtube size={20} className="text-white" />
-          <span className="text-[10px] font-black uppercase tracking-tighter">YouTube</span>
-        </button>
-        <button className="flex flex-col items-center justify-center gap-2 py-4 bg-[#111112] border border-white/5 rounded-2xl active:bg-white/10 transition-colors">
-          <Twitter size={20} className="text-white" />
-          <span className="text-[10px] font-black uppercase tracking-tighter">Twitter</span>
-        </button>
-      </div>
-
-      {/* LEGAL DISCLAIMER */}
-      <div className="mt-2 p-5 rounded-[2rem] bg-red-500/[0.02] border border-red-500/10">
-        <h4 className="text-[10px] font-black text-red-500/60 uppercase tracking-[0.3em] mb-3 text-center">Отказ от ответственности</h4>
-        <p className="text-[10px] text-zinc-600 leading-relaxed text-center italic">
-          НАСТОЯЩИЙ ПРОЕКТ ПРЕДОСТАВЛЯЕТ ИСКЛЮЧИТЕЛЬНО ИНФОРМАЦИОННЫЕ МАТЕРИАЛЫ. НИКАКАЯ ИНФОРМАЦИЯ НЕ ЯВЛЯЕТСЯ ФИНАНСОВОЙ РЕКОМЕНДАЦИЕЙ. ПРОЕКТ НЕ НЕСЕТ ОТВЕТСТВЕННОСТИ ЗА ЛЮБЫЕ ФИНАНСОВЫЕ ПОТЕРИ. ВСЕ РЕШЕНИЯ ПОЛЬЗОВАТЕЛЬ ПРИНИМАЕТ САМОСТОЯТЕЛЬНО.
-        </p>
-      </div>
-
-    </div>
-  );
+// ПРО-УРОВЕНЬ: Храним маршруты в константах, чтобы избежать опечаток
+const ROUTES = {
+  PREVIEW: 'preview',
+  ARENA: 'arena',
+  BOOTY: 'booty',
+  RATING: 'rating',
+  PROFILE: 'profile',
+  ACADEMY: 'academy',
+  NEWS: 'news',
+  GUIDE: 'guide',
+  SEASON: 'season'
 };
 
-export default Preview;
+function App() {
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState(ROUTES.PREVIEW);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // ОПТИМИЗАЦИЯ: useCallback кэширует функцию, чтобы она не создавалась заново при каждом клике
+  const renderCurrentScreen = useCallback(() => {
+    switch (activeTab) {
+      case ROUTES.PREVIEW: return <Preview />;
+      case ROUTES.ARENA:   return <Arena />;
+      case ROUTES.BOOTY:   return <Placeholder name="Призы (Booty)" />;
+      case ROUTES.RATING:  return <Placeholder name="Рейтинг" />;
+      case ROUTES.PROFILE: return <Placeholder name="Профиль" />;
+      case ROUTES.ACADEMY: return <Placeholder name="Академия" />;
+      case ROUTES.NEWS:    return <Placeholder name="Новости" />;
+      case ROUTES.GUIDE:   return <Placeholder name="Гайды" />;
+      case ROUTES.SEASON:  return <Placeholder name="Сезон" />;
+      default:
+        return (
+          <div className="flex flex-col items-center justify-center mt-40 gap-3 animate-fadeIn">
+            <span className="text-red-500 font-black uppercase tracking-widest text-sm">Ошибка 404</span>
+            <p className="text-zinc-500 text-xs">Раздел "{activeTab}" не найден.</p>
+            <button 
+              onClick={() => setActiveTab(ROUTES.PREVIEW)}
+              className="mt-4 px-6 py-2.5 bg-white/5 hover:bg-white/10 active:bg-white/20 border border-white/10 rounded-xl text-xs font-bold transition-all"
+            >
+              На главную
+            </button>
+          </div>
+        );
+    }
+  }, [activeTab]);
+
+  if (loading) return <LoadingScreen />;
+
+  return (
+    // ИДЕАЛЬНЫЙ КАРКАС ДЛЯ TELEGRAM
+    // fixed inset-0: Прибиваем приложение к краям, блокируем "резинку" iOS
+    // overscroll-none: Отключаем нативный pull-to-refresh
+    <div className="fixed inset-0 bg-[#0a0a0c] text-white font-sans flex flex-col overscroll-none selection:bg-blue-500/30">
+      
+      {/* 
+        СКРОЛЛИРУЕМАЯ ОБЛАСТЬ
+        overscroll-contain: Скролл остается строго внутри этого блока
+      */}
+      <main className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain w-full max-w-md mx-auto scroll-smooth">
+        {/* Внутренний контейнер. pb-32 защищает контент от перекрытия навигацией */}
+        <div className="min-h-full px-4 pt-4 pb-32">
+          {renderCurrentScreen()}
+        </div>
+      </main>
+
+      {/* Навигация (твой компонент сам себя позиционирует через fixed) */}
+      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+      
+    </div>
+  );
+}
+
+// ОПТИМИЗАЦИЯ: React.memo предотвращает лишние перерисовки компонента
+const Placeholder = React.memo(({ name }) => (
+  <div className="flex flex-col items-center justify-center mt-32 animate-fadeIn px-4">
+    <div className="w-full max-w-sm px-8 py-8 bg-gradient-to-b from-white/[0.03] to-transparent border border-white/5 rounded-[2rem] flex flex-col items-center gap-4 shadow-2xl relative overflow-hidden">
+      {/* Декоративный блик */}
+      <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 blur-[50px] rounded-full" />
+      
+      <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-2 z-10">
+        <div className="w-5 h-5 border-2 border-zinc-500/30 border-t-blue-500 rounded-full animate-spin" />
+      </div>
+      
+      <div className="flex flex-col items-center gap-1 z-10 text-center">
+        <span className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">В разработке</span>
+        <span className="text-white font-black text-xl">{name}</span>
+      </div>
+    </div>
+  </div>
+));
+
+export default App;
