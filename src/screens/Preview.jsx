@@ -3,14 +3,10 @@ import { ShieldCheck, Brain, TrendingUp, Youtube, Twitter, Video } from 'lucide-
 
 const Preview = () => {
   return (
-    // Добавили overflow-y-auto и min-h-full для уверенного скролла
-    <div className="flex flex-col gap-8 pb-40 animate-fadeIn font-sans w-full">
+    <div className="flex flex-col gap-8 pb-10 animate-fadeIn font-sans w-full">
       
-      {/* HEADER SECTION - ТЕПЕРЬ ПО ЦЕНТРУ */}
-      <div className="flex flex-col items-center text-center gap-5 mt-6 px-2">
-        <div className="inline-block px-4 py-1.5 bg-white/5 border border-white/10 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.02)]">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-blue-400 font-black">Welcome to Academy</span>
-        </div>
+      {/* HEADER SECTION - БЕЗ WELCOME */}
+      <div className="flex flex-col items-center text-center gap-5 mt-8 px-2">
         <h1 className="text-3xl font-black leading-[1.1] tracking-tight text-white max-w-[90%]">
           Сообщество для становления и развития <br/>
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-400">
@@ -23,10 +19,10 @@ const Preview = () => {
       </div>
 
       {/* DIRECTIONS SECTION */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 mt-2">
         <h2 className="text-lg font-bold text-white px-1">Направления</h2>
         <div className="grid grid-cols-1 gap-3">
-          <div className="p-5 bg-[#111112] border border-white/5 rounded-[2rem] flex items-start gap-4 transition-all active:scale-[0.98]">
+          <div className="p-5 bg-[#111112] border border-white/5 rounded-[2rem] flex items-start gap-4">
             <div className="p-2.5 bg-blue-500/10 rounded-2xl">
               <TrendingUp size={22} className="text-blue-500" />
             </div>
@@ -36,7 +32,7 @@ const Preview = () => {
             </div>
           </div>
           
-          <div className="p-5 bg-[#111112] border border-white/5 rounded-[2rem] flex items-start gap-4 transition-all active:scale-[0.98]">
+          <div className="p-5 bg-[#111112] border border-white/5 rounded-[2rem] flex items-start gap-4">
             <div className="p-2.5 bg-purple-500/10 rounded-2xl">
               <Brain size={22} className="text-purple-500" />
             </div>
@@ -77,15 +73,15 @@ const Preview = () => {
 
       {/* SOCIAL BUTTONS */}
       <div className="grid grid-cols-3 gap-3 mt-2">
-        <button className="flex flex-col items-center justify-center gap-2 py-4 bg-[#111112] border border-white/5 rounded-2xl transition-all active:bg-white/10">
+        <button className="flex flex-col items-center justify-center gap-2 py-4 bg-[#111112] border border-white/5 rounded-2xl active:bg-white/10">
           <Video size={20} className="text-white" />
           <span className="text-[10px] font-black uppercase tracking-tighter">TikTok</span>
         </button>
-        <button className="flex flex-col items-center justify-center gap-2 py-4 bg-[#111112] border border-white/5 rounded-2xl transition-all active:bg-white/10">
+        <button className="flex flex-col items-center justify-center gap-2 py-4 bg-[#111112] border border-white/5 rounded-2xl active:bg-white/10">
           <Youtube size={20} className="text-white" />
           <span className="text-[10px] font-black uppercase tracking-tighter">YouTube</span>
         </button>
-        <button className="flex flex-col items-center justify-center gap-2 py-4 bg-[#111112] border border-white/5 rounded-2xl transition-all active:bg-white/10">
+        <button className="flex flex-col items-center justify-center gap-2 py-4 bg-[#111112] border border-white/5 rounded-2xl active:bg-white/10">
           <Twitter size={20} className="text-white" />
           <span className="text-[10px] font-black uppercase tracking-tighter">Twitter</span>
         </button>

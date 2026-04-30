@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import LoadingScreen from './components/LoadingScreen';
 import Navigation from './components/Navigation';
 
-// Импортируем готовые экраны
 import Preview from './screens/Preview';
 import Arena from './screens/Arena';
 
@@ -10,32 +9,22 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('preview');
 
-  // Эмуляция загрузки
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2500);
     return () => clearTimeout(timer);
   }, []);
 
-  // ЖЕЛЕЗОБЕТОННЫЙ РОУТЕР
-  // Эта функция четко решает, какой экран отдать, и имеет защиту от сбоев
   const renderCurrentScreen = () => {
     switch (activeTab) {
-      // Готовые экраны
       case 'preview': return <Preview />;
       case 'arena':   return <Arena />;
-      
-      // Заглушки Main Nav
       case 'booty':   return <Placeholder name="Booty Vault" />;
       case 'rating':  return <Placeholder name="Global Rating" />;
       case 'profile': return <Placeholder name="User Profile" />;
-      
-      // Заглушки Sub Nav
       case 'academy': return <Placeholder name="Academy" />;
       case 'news':    return <Placeholder name="News & Updates" />;
       case 'guide':   return <Placeholder name="Platform Guide" />;
       case 'season':  return <Placeholder name="Current Season" />;
-      
-      // ЗАЩИТА ОТ ДУРАКА: Если стейт сломался, выдаем безопасный экран, а не черный квадрат
       default:
         return (
           <div className="h-full flex flex-col items-center justify-center mt-40 gap-2">
@@ -55,21 +44,21 @@ function App() {
   if (loading) return <LoadingScreen />;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-white flex flex-col font-sans relative pb-32">
+    // Главный контейнер ЖЕСТКО зафиксирован на весь экран (h-[100dvh]) и скрывает всё, что вылезает
+    <div className="h-[100dvh] w-full bg-[#0a0a0c] text-white font-sans flex flex-col relative overflow-hidden">
       
-      {/* КОНТЕЙНЕР ЭКРАНА */}
-      <main className="flex-1 w-full max-w-md mx-auto px-5">
+      {/* А вот этот блок (main) занимает все свободное место (flex-1) и внутри себя СКРОЛЛИТСЯ (overflow-y-auto) */}
+      <main className="flex-1 overflow-y-auto w-full max-w-md mx-auto px-5 pt-2 pb-32">
         {renderCurrentScreen()}
       </main>
 
-      {/* НАВИГАЦИЯ */}
+      {/* Навигация остается неподвижной поверх всего */}
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
       
     </div>
   );
 }
 
-// Универсальный компонент-заглушка (чтобы код был чистым и DRY)
 const Placeholder = ({ name }) => (
   <div className="h-full flex flex-col items-center justify-center mt-40 animate-fadeIn">
     <div className="px-6 py-3 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col items-center gap-2">
