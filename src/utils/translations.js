@@ -32,6 +32,16 @@ export const translations = {
     animated: "Анимированные подарки",
     privacy: "Приватность",
     contact: "Связаться с командой"
+  },
+  UA: {
+    requests: "Запити",
+    bestWin: "Кращий він",
+    result: "Результат",
+    options: "Опції",
+    deposit: "Депозит",
+    level: "Рівень",
+    earned: "Зароблено",
+    friends: "Друзі",
+    invite: "Запросити друзів +"
   }
-  // Добавь UA, KR, ZH по этому же шаблону
 };

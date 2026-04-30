@@ -63,11 +63,11 @@ function App() {
     <div className="fixed inset-0 bg-[#0a0a0c] text-white font-sans flex flex-col overscroll-none select-none">
       
       {/* Главный скролл-контейнер */}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain w-full max-w-md mx-auto">
-        <div className="min-h-full px-4 pt-4 pb-32">
-          {renderCurrentScreen()}
-        </div>
-      </main>
+<main className="scroll-container flex-1 w-full max-w-md mx-auto">
+  <div className="min-h-full px-4 pt-4 pb-32">
+    {renderCurrentScreen()}
+  </div>
+</main>
 
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
       
