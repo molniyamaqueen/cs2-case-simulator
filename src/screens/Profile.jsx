@@ -1,168 +1,221 @@
-import React, { useState, useEffect } from 'react';
-import { Settings, ChevronRight, Plus, Users, WalletCards, Gem, Shield, Smartphone } from 'lucide-react';
-import { getTelegramUser, generateRefLink, copyToClipboard } from '../services/api';
-import { useLanguage } from '../i18n/LanguageContext';
+import React, { useState } from 'react';
+import { 
+  Settings, ChevronRight, X, Gem, Wallet, 
+  Twitter, Video, Send, Check
+} from 'lucide-react';
 
 const Profile = () => {
-  const { lang, setLang, t } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [tgUser, setTgUser] = useState(null);
-  const [copyStatus, setCopyStatus] = useState(t('invite_btn'));
-  
-  const [anonMode, setAnonMode] = useState(false);
-  const [streamerMode, setStreamerMode] = useState(false);
-  const [tactile, setTactile] = useState(true);
 
-  useEffect(() => {
-    setTgUser(getTelegramUser());
-    setCopyStatus(t('invite_btn'));
-  }, [lang, t]);
-
-  const triggerHaptic = () => {
-    try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); } catch (e) {}
+  // Моковые данные юзера (потом заменим на данные из Telegram)
+  const tgUser = {
+    username: 'ebaldremal1448',
+    avatar: 'https://i.pravatar.cc/150?img=11'
   };
-
-  const handleInvite = () => {
-    if (tgUser?.id) {
-      const link = generateRefLink(tgUser.id);
-      copyToClipboard(link);
-      setCopyStatus(t('link_copied'));
-      setTimeout(() => setCopyStatus(t('invite_btn')), 2000);
-    }
-  };
-
-  if (!tgUser) return <div className="pt-20 text-center font-black">Loading...</div>;
 
   return (
-    <div className="min-h-full px-5 pt-4 pb-32 animate-in fade-in duration-500">
+    <div className="w-full flex flex-col gap-6 font-sans">
       
-      {/* ВЕРХНЯЯ ПАНЕЛЬ */}
-      <div className="flex justify-between items-center mb-6">
-        <button onClick={() => { setIsMenuOpen(true); triggerHaptic(); }} className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center active:scale-95 transition-all">
-          <Settings size={24} className="text-zinc-400" />
+      {/* HEADER */}
+      <div className="flex items-center justify-between mt-2">
+        <button 
+          onClick={() => setIsMenuOpen(true)}
+          className="p-2.5 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors"
+        >
+          <Settings size={22} className="text-white" />
         </button>
-        <div className="bg-white/5 px-6 py-3 rounded-full flex items-center gap-2 border border-white/5">
-          <Gem size={18} className="text-cyan-400" />
-          <span className="text-base font-black tracking-wide">0 TON</span>
+        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-2xl">
+          <Gem size={16} className="text-blue-400" />
+          <span className="text-white font-bold text-sm">0 TON</span>
         </div>
       </div>
 
-      {/* ЛЕГЕНДАРНАЯ БЕЛАЯ КАРТОЧКА (Холодные синие/голубые капли) */}
-      <div className="w-full rounded-[32px] bg-gradient-to-b from-white via-zinc-100 to-zinc-300 p-6 mb-8 shadow-[0_0_40px_rgba(255,255,255,0.1)] relative overflow-hidden">
-        {/* Цветные капли заменены на ледяной/кибер стиль */}
-        <div className="absolute top-4 left-10 w-4 h-4 bg-blue-500 rounded-full blur-[3px] opacity-40" />
-        <div className="absolute top-20 right-12 w-5 h-5 bg-cyan-400 rounded-full blur-[4px] opacity-40" />
-        <div className="absolute bottom-10 left-1/2 w-8 h-8 bg-sky-300 rounded-full blur-[6px] opacity-40" />
+      {/* MAIN USER CARD */}
+      <div className="relative overflow-hidden bg-white rounded-[2rem] p-6 shadow-2xl">
+        {/* Радужные мутные шарики (Паттерн) */}
+        <div className="absolute top-[-20%] left-[-10%] w-40 h-40 bg-pink-400/40 blur-[40px] rounded-full mix-blend-multiply" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-48 h-48 bg-blue-400/40 blur-[40px] rounded-full mix-blend-multiply" />
+        <div className="absolute top-[30%] left-[40%] w-32 h-32 bg-yellow-300/40 blur-[40px] rounded-full mix-blend-multiply" />
         
         <div className="relative z-10 flex flex-col items-center">
-          {/* Аватар и Ник */}
-          <div className="flex flex-col items-center mb-6 mt-2">
-              <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-xl mb-3 bg-zinc-200">
-                <img src={tgUser.avatar} alt="avatar" className="w-full h-full object-cover" />
-              </div>
-              <h2 className="text-2xl font-black tracking-tight text-black">{tgUser.username}</h2>
-          </div>
+          <img 
+            src={tgUser.avatar} 
+            alt="Avatar" 
+            className="w-20 h-20 rounded-[1.5rem] object-cover shadow-md border-2 border-white/50 mb-3"
+          />
+          <h2 className="text-xl font-black text-zinc-900 mb-6">@{tgUser.username}</h2>
           
-          {/* Статистика */}
-          <div className="w-full flex gap-3">
-            <div className="flex-1 bg-black/5 rounded-[24px] py-4 px-6 flex flex-col items-center justify-center border border-black/5 shadow-inner">
-              <span className="text-xl font-black text-black">0</span>
-              <span className="text-[10px] text-zinc-500 font-bold uppercase mt-1 tracking-widest">{t('games')}</span>
+          <div className="flex w-full justify-between px-4 mb-6">
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-2xl font-black text-zinc-900">0</span>
+              <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Requests</span>
             </div>
-            <div className="flex-1 bg-black/5 rounded-[24px] py-4 px-6 flex flex-col items-center justify-center border border-black/5 shadow-inner">
-              <span className="text-xl font-black text-black">0 TON</span>
-              <span className="text-[10px] text-zinc-500 font-bold uppercase mt-1 tracking-widest">{t('best_win')}</span>
+            <div className="w-px h-10 bg-zinc-200" />
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-2xl font-black text-zinc-900">0 TON</span>
+              <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Best win</span>
             </div>
           </div>
+
+          <button className="flex items-center gap-2 px-5 py-2.5 bg-zinc-900/5 hover:bg-zinc-900/10 rounded-2xl transition-colors">
+            <span className="text-sm font-bold text-zinc-800">Result</span>
+            <ChevronRight size={16} className="text-zinc-600" />
+          </button>
         </div>
       </div>
 
-      {/* БЛОК РЕФЕРАЛОВ (Темная стеклянная линза) */}
-      <h3 className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-4 px-2 italic">
-        {t('invite_title')} <span className="text-zinc-600 ml-1">💎</span>
-      </h3>
+      {/* OPTIONS */}
+      <div className="flex items-center justify-between px-2">
+        <h3 className="text-xl font-bold text-white tracking-tight">Options</h3>
+        <button className="px-6 py-2.5 bg-white hover:bg-zinc-200 text-zinc-900 font-black rounded-full text-sm transition-colors shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+          Deposit
+        </button>
+      </div>
 
-      <div className="w-full rounded-[32px] bg-[#09090b]/80 backdrop-blur-xl p-6 mb-6 shadow-2xl border border-white/[0.06] relative overflow-hidden">
-        {/* Холодная подсветка внутри темного блока */}
-        <div className="absolute top-0 left-10 w-20 h-20 bg-blue-500/10 rounded-full blur-[20px]" />
-
-        <div className="flex justify-between items-center mb-5 relative z-10">
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-white">{t('level')} 1</span>
-            <span className="bg-white/20 text-white text-[11px] font-black px-2 py-1 rounded-full">5%</span>
+      {/* REFERRAL CARD */}
+      <div className="relative overflow-hidden bg-white rounded-[2rem] p-6 shadow-2xl mb-4">
+        {/* Радужные шарики */}
+        <div className="absolute top-0 right-0 w-40 h-40 bg-purple-400/30 blur-[40px] rounded-full mix-blend-multiply" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-32 h-32 bg-orange-400/30 blur-[40px] rounded-full mix-blend-multiply" />
+        
+        <div className="relative z-10 flex flex-col gap-5">
+          <div className="flex justify-between items-center bg-zinc-900/5 px-4 py-3 rounded-2xl">
+            <span className="font-bold text-zinc-900">Level 1</span>
+            <span className="font-black text-blue-600 bg-blue-100 px-3 py-1 rounded-xl text-sm">5%</span>
           </div>
-        </div>
 
-        <div className="flex gap-3 relative z-10">
-          <div className="flex-1 bg-white/5 rounded-[24px] px-5 py-4 flex items-center justify-between border border-white/[0.03]">
-            <div className="flex items-center gap-2 text-zinc-400">
-              <WalletCards size={16} className="text-blue-400"/><span className="text-[11px] font-bold uppercase tracking-wider">{t('earned')}</span>
+          <div className="flex gap-3">
+            <div className="flex-1 bg-zinc-900/5 p-4 rounded-2xl flex flex-col gap-1">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Wallet size={14} className="text-zinc-500" />
+                <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Earned</span>
+              </div>
+              <span className="text-lg font-black text-zinc-900">0 TON</span>
             </div>
-            <div className="text-xl font-bold text-white">0</div>
-          </div>
-          <div className="flex-1 bg-white/5 rounded-[24px] px-5 py-4 flex items-center justify-between border border-white/[0.03]">
-            <div className="flex items-center gap-2 text-zinc-400">
-              <Users size={16} className="text-cyan-400"/><span className="text-[11px] font-bold uppercase tracking-wider">{t('friends')}</span>
+            <div className="flex-1 bg-zinc-900/5 p-4 rounded-2xl flex flex-col gap-1">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Friends</span>
+              </div>
+              <span className="text-lg font-black text-zinc-900">1</span>
             </div>
-            <div className="text-xl font-bold text-white">0</div>
           </div>
+
+          <button className="w-full py-4 bg-zinc-900 active:scale-95 text-white font-black text-lg rounded-[1.5rem] transition-all shadow-xl">
+            Invite friends +
+          </button>
         </div>
       </div>
 
-      {/* КНОПКА ПРИГЛАШЕНИЯ (СТРОГАЯ ЧЕРНАЯ, НОЛЬ ФИОЛЕТОВОГО) */}
-      <button onClick={handleInvite} className="w-full h-16 bg-black border border-white/10 rounded-full font-bold text-lg text-white flex items-center justify-center gap-3 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.05)] pr-4 transition-transform relative z-10">
-        {copyStatus} <Plus size={24} className="bg-white/10 rounded-full p-1.5" />
-      </button>
+      {/* БОКОВОЕ МЕНЮ (ШТОРКА НАСТРОЕК) */}
+      {isMenuOpen && <SettingsBottomSheet onClose={() => setIsMenuOpen(false)} />}
 
-      {/* ШТОРКА МЕНЮ */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-[100] flex flex-col justify-end">
-          <div onClick={() => setIsMenuOpen(false)} className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" />
-          
-          <div className="relative w-full bg-[#1c1c1e] rounded-t-[32px] p-6 pb-12 animate-in slide-in-from-bottom-full duration-300 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] border-t border-white/5">
-            <div className="w-12 h-1.5 bg-zinc-600 rounded-full mx-auto mb-6" />
-            <h3 className="text-3xl font-bold mb-6 text-white italic">{t('menu')}</h3>
+    </div>
+  );
+};
 
-            <div className="space-y-8 overflow-y-auto max-h-[60vh] pr-2 pb-10">
-              <div>
-                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 pr-2">{t('language')}</p>
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { id: 'EN', flag: '🇺🇸', label: 'EN' }, { id: 'RU', flag: '🇷🇺', label: 'RU' }, { id: 'KR', flag: '🇰🇷', label: '한국' },
-                    { id: 'CN', flag: '🇨🇳', label: '繁體' }, { id: 'UA', flag: '🇺🇦', label: 'UA' }, { id: 'FA', flag: '🇮🇷', label: 'FA' }
-                  ].map((l) => (
-                    <button 
-                      key={l.id}
-                      onClick={() => { setLang(l.id); triggerHaptic(); }}
-                      className={`h-12 px-4 rounded-full flex items-center justify-center gap-2 text-sm font-bold transition-all ${lang === l.id ? 'bg-white text-black' : 'bg-white/5 text-zinc-300 hover:bg-white/10 border border-white/5'}`}
-                    >
-                      <span className="text-lg">{l.flag}</span> {l.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+// --- КОМПОНЕНТ ШТОРКИ НАСТРОЕК ---
+const SettingsBottomSheet = ({ onClose }) => {
+  const [tactile, setTactile] = useState(true);
+  const [animated, setAnimated] = useState(true);
+  
+  const languages = ['EN', 'RU', 'KR', 'ZH', 'UA', 'FA'];
 
-              <div className="space-y-6 pb-10">
-                {[
-                  { id: 'anon', icon: Shield, color: 'text-blue-400', title: t('anon_mode'), state: anonMode, setState: setAnonMode },
-                  { id: 'streamer', icon: Gem, color: 'text-cyan-400', title: t('streamer_mode'), state: streamerMode, setState: setStreamerMode },
-                  { id: 'tactile', icon: Smartphone, color: 'text-sky-400', title: t('tactile'), state: tactile, setState: setTactile },
-                ].map(item => (
-                  <div key={item.id} className="flex justify-between items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/[0.02]">
-                    <div className="flex gap-3">
-                      <item.icon className={`${item.color} shrink-0 mt-1`} size={20} />
-                      <h4 className="text-sm font-bold text-zinc-300 uppercase tracking-widest mb-1">{item.title}</h4>
-                    </div>
-                    <button onClick={() => { item.setState(!item.state); triggerHaptic(); }} className={`relative w-[50px] h-[28px] rounded-full transition-colors duration-300 shrink-0 ${item.state ? 'bg-blue-500' : 'bg-zinc-600'}`}>
-                      <div className={`absolute top-[2px] w-[24px] h-[24px] bg-white rounded-full transition-transform duration-300 shadow-md ${item.state ? 'left-[24px]' : 'left-[2px]'}`} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col justify-end">
+      {/* Затемнение фона */}
+      <div 
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fadeIn" 
+        onClick={onClose}
+      />
+      
+      {/* Сама шторка */}
+      <div className="relative w-full max-w-md mx-auto bg-[#1c1c1e] rounded-t-[2.5rem] px-6 pt-6 pb-12 flex flex-col gap-6 animate-slideUp border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
+        
+        {/* Шапка шторки */}
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-2xl font-black text-white">Menu</h2>
+          <button onClick={onClose} className="p-2 bg-white/10 rounded-full active:bg-white/20">
+            <X size={20} className="text-white" />
+          </button>
+        </div>
+
+        {/* Языки */}
+        <div className="flex flex-col gap-3">
+          <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest pl-1">Language</span>
+          <div className="flex flex-wrap gap-2">
+            {languages.map((lang) => (
+              <button 
+                key={lang}
+                className={`px-5 py-2.5 rounded-2xl text-sm font-bold transition-colors ${
+                  lang === 'EN' 
+                    ? 'bg-white text-black shadow-lg' 
+                    : 'bg-white/5 text-zinc-400 border border-white/5'
+                }`}
+              >
+                {lang}
+              </button>
+            ))}
           </div>
         </div>
-      )}
+
+        {/* Тумблеры */}
+        <div className="flex flex-col gap-5 mt-2">
+          <div className="flex justify-between items-center">
+            <span className="font-bold text-white">Tactile Response</span>
+            <button 
+              onClick={() => setTactile(!tactile)}
+              className={`w-14 h-8 rounded-full relative transition-colors duration-300 ${tactile ? 'bg-blue-500' : 'bg-white/10'}`}
+            >
+              <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform duration-300 shadow-md ${tactile ? 'left-7' : 'left-1'}`} />
+            </button>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="font-bold text-white">Animated Gifts</span>
+            <button 
+              onClick={() => setAnimated(!animated)}
+              className={`w-14 h-8 rounded-full relative transition-colors duration-300 ${animated ? 'bg-blue-500' : 'bg-white/10'}`}
+            >
+              <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform duration-300 shadow-md ${animated ? 'left-7' : 'left-1'}`} />
+            </button>
+          </div>
+        </div>
+
+        {/* Навигация (Ссылки) */}
+        <div className="flex flex-col gap-2 mt-2 bg-white/5 p-2 rounded-[2rem]">
+          <button className="flex items-center justify-between p-3 px-4 hover:bg-white/5 active:bg-white/10 rounded-2xl transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500/10 rounded-xl"><Twitter size={18} className="text-blue-400" /></div>
+              <span className="font-bold text-white">X (Twitter)</span>
+            </div>
+            <ChevronRight size={20} className="text-zinc-600" />
+          </button>
+          <button className="flex items-center justify-between p-3 px-4 hover:bg-white/5 active:bg-white/10 rounded-2xl transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-pink-500/10 rounded-xl"><Video size={18} className="text-pink-400" /></div>
+              <span className="font-bold text-white">TikTok</span>
+            </div>
+            <ChevronRight size={20} className="text-zinc-600" />
+          </button>
+          <button className="flex items-center justify-between p-3 px-4 hover:bg-white/5 active:bg-white/10 rounded-2xl transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-cyan-500/10 rounded-xl"><Send size={18} className="text-cyan-400" /></div>
+              <span className="font-bold text-white">Channel</span>
+            </div>
+            <ChevronRight size={20} className="text-zinc-600" />
+          </button>
+        </div>
+
+        {/* Подвал */}
+        <div className="flex gap-3 mt-4">
+          <button className="flex-1 py-4 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white font-bold rounded-[1.5rem] transition-colors">
+            Privacy
+          </button>
+          <button className="flex-[2] py-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-black rounded-[1.5rem] shadow-lg shadow-blue-500/20 transition-all">
+            Contact the Team
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 };
