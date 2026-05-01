@@ -10,28 +10,57 @@ import {
   Award, 
   Globe, 
   Zap, 
-  ShieldCheck, 
+  Smartphone,
+  Bell,
+  Info,
+  ShieldCheck,
+  Heart,
   MessageCircle,
-  Smartphone
+  LayoutGrid
 } from 'lucide-react';
-import { translations } from '../utils/translations';
+
+// Локальный объект переводов, чтобы ничего не отвалилось
+const translations = {
+  EN: {
+    games: "Games", bestWin: "Best win", result: "Result", 
+    deposit: "Deposit", level: "Level", earned: "Earned", 
+    friends: "Friends", invite: "Invite friends", more: "More", 
+    menu: "Menu", language: "Language", tactile: "Haptic Feedback", 
+    animated: "Animations", privacy: "Privacy", contact: "Support Team"
+  },
+  RU: {
+    games: "Игры", bestWin: "Лучший вин", result: "Результат", 
+    deposit: "Депозит", level: "Уровень", earned: "Заработано", 
+    friends: "Друзья", invite: "Пригласить друзей", more: "Еще", 
+    menu: "Меню", language: "Язык", tactile: "Виброотклик", 
+    animated: "Анимации", privacy: "Приватность", contact: "Поддержка"
+  },
+  UA: {
+    games: "Ігри", bestWin: "Кращий він", result: "Результат", 
+    deposit: "Депозит", level: "Рівень", earned: "Зароблено", 
+    friends: "Друзі", invite: "Запросити друзів", more: "Ще", 
+    menu: "Меню", language: "Мова", tactile: "Віброводгук", 
+    animated: "Анімації", privacy: "Приватність", contact: "Підтримка"
+  }
+};
 
 const Profile = () => {
-  // --- STATE ---
+  // --- СОСТОЯНИЕ (STATE) ---
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [lang, setLang] = useState('RU');
   const [user, setUser] = useState({ 
     username: 'ebaldremal1448', 
-    avatar: '' 
+    avatar: 'https://i.pravatar.cc/150?u=fallback' 
   });
   
-  // Toggles for Menu
+  // Настройки интерфейса
   const [hapticEnabled, setHapticEnabled] = useState(true);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
+  const [notifications, setNotifications] = useState(true);
 
   const t = (key) => translations[lang]?.[key] || translations['EN'][key];
 
-  // --- TELEGRAM DATA ---
+  // --- ИНИЦИАЛИЗАЦИЯ ДАННЫХ TELEGRAM ---
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
     if (tg?.initDataUnsafe?.user) {
@@ -53,226 +82,221 @@ const Profile = () => {
   ];
 
   return (
-    <div className="w-full flex flex-col font-sans animate-fadeIn select-none pb-12 bg-black min-h-screen">
+    <div className="w-full flex flex-col font-sans animate-fadeIn select-none pb-20 bg-[#050505] min-h-screen">
       
-      {/* --- 1. HEADER AREA --- */}
-      <div className="flex items-center justify-between px-4 mt-3 mb-4">
+      {/* --- 1. ВЕРХНЯЯ ПАНЕЛЬ (HEADER) --- */}
+      <div className="flex items-center justify-between px-6 mt-6 mb-8">
         <button 
           onClick={() => setIsMenuOpen(true)} 
-          className="p-2.5 bg-zinc-900/50 active:scale-90 transition-all rounded-2xl border border-white/5 shadow-lg"
+          className="w-12 h-12 flex items-center justify-center bg-white/5 active:scale-90 transition-all rounded-2xl border border-white/10 shadow-lg"
         >
-          <Settings size={20} className="text-zinc-400" />
+          <Settings size={22} className="text-zinc-400" />
         </button>
         
-        <div className="flex items-center gap-2 px-4 py-2 bg-zinc-900/50 border border-white/10 rounded-2xl shadow-xl">
-          <Gem size={14} className="text-[#00d2ff] drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]" />
-          <span className="text-white font-black text-[11px] uppercase tracking-wider">0 TON</span>
+        <div className="flex items-center gap-2.5 px-5 py-2.5 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl">
+          <Gem size={16} className="text-[#00d2ff] drop-shadow-[0_0_8px_rgba(0,210,255,0.4)]" />
+          <span className="text-white font-black text-sm uppercase tracking-wider">0.00 TON</span>
         </div>
       </div>
 
-      {/* --- 2. MAIN PROFILE BLOCK (Edge-to-Edge / Flattened) --- */}
-      <div className="w-full relative overflow-hidden bg-white py-4 px-6 shadow-[0_10px_30px_rgba(0,0,0,0.5)] border-y border-white/20 mb-3">
-        {/* Background Premium Blobs */}
-        <div className="absolute top-0 left-[-10%] w-40 h-full bg-purple-400/15 blur-[45px] rounded-full" />
-        <div className="absolute bottom-0 right-[-10%] w-40 h-full bg-blue-400/15 blur-[45px] rounded-full" />
+      {/* --- 2. ОСНОВНАЯ КАРТОЧКА (МАССИВНАЯ) --- */}
+      <div className="mx-4 relative group mb-6">
+        {/* Фоновое свечение для объема */}
+        <div className="absolute inset-0 bg-blue-500/10 blur-[60px] opacity-70" />
         
-        <div className="relative z-10 flex items-center justify-between">
-          {/* User Info Group */}
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <img 
-                src={user.avatar || 'https://i.pravatar.cc/150?u=a'} 
-                className="w-14 h-14 rounded-[18px] object-cover border border-zinc-100 shadow-sm"
-                alt="Profile"
-              />
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#00d2ff] rounded-full border-2 border-white flex items-center justify-center">
-                <Zap size={10} className="text-white" fill="currentColor" />
+        <div className="relative overflow-hidden bg-white rounded-[36px] py-10 px-8 shadow-[0_30px_60px_rgba(0,0,0,0.5)] border border-white/30">
+          {/* Радужные градиентные шарики (Blobs) */}
+          <div className="absolute -top-16 -left-16 w-48 h-48 bg-purple-400/20 blur-[50px] rounded-full" />
+          <div className="absolute -bottom-16 -right-16 w-56 h-56 bg-blue-400/20 blur-[55px] rounded-full" />
+          
+          <div className="relative z-10 flex flex-col items-center">
+            {/* Аватар и Юзер */}
+            <div className="flex items-center w-full justify-between mb-10">
+              <div className="flex items-center gap-5">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-blue-400/20 blur-md rounded-[22px]" />
+                  <img 
+                    src={user.avatar} 
+                    className="w-[68px] h-[68px] rounded-[22px] object-cover border-2 border-white shadow-xl relative z-10"
+                    alt="User"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <h2 className="text-[24px] font-black text-zinc-900 tracking-tighter leading-tight">
+                    @{user.username}
+                  </h2>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <ShieldCheck size={12} className="text-blue-500" />
+                    <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Verified Player</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Компактная стата */}
+              <div className="flex gap-6">
+                <div className="flex flex-col items-center">
+                  <span className="text-xl font-black text-zinc-900 leading-none">0</span>
+                  <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter mt-1.5">{t('games')}</span>
+                </div>
+                <div className="w-[1px] h-10 bg-zinc-100 self-center" />
+                <div className="flex flex-col items-center">
+                  <span className="text-xl font-black text-zinc-900 leading-none">0.0</span>
+                  <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter mt-1.5">Win</span>
+                </div>
               </div>
             </div>
             
-            <div className="flex flex-col">
-              <h2 className="text-xl font-black text-zinc-900 leading-tight tracking-tighter">
-                @{user.username}
-              </h2>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-                  Inventory cost 0 TON
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          {/* Flattened Stats */}
-          <div className="flex items-center gap-5 pr-2">
-            <div className="flex flex-col items-center">
-              <span className="text-lg font-black text-zinc-900 leading-none">0</span>
-              <span className="text-[8px] font-bold text-zinc-400 uppercase mt-1">{t('games')}</span>
-            </div>
-            <div className="w-px h-8 bg-zinc-200/80" />
-            <div className="flex flex-col items-center">
-              <span className="text-lg font-black text-zinc-900 leading-none">0</span>
-              <span className="text-[8px] font-bold text-zinc-400 uppercase mt-1">Win</span>
-            </div>
+            {/* Внутренняя кнопка результата */}
+            <button className="w-full py-4.5 bg-zinc-900 text-white rounded-2xl flex items-center justify-center gap-3 active:scale-[0.97] transition-all shadow-xl">
+              <Zap size={16} fill="white" />
+              <span className="text-[11px] font-black uppercase tracking-[0.2em]">{t('result')}</span>
+              <ChevronRight size={16} className="opacity-50" />
+            </button>
           </div>
         </div>
       </div>
 
-      {/* --- 3. SECONDARY ACTION ROW (Inventory & Result) --- */}
-      <div className="w-full flex flex-col mb-8">
-        <button className="w-full py-3.5 bg-zinc-900/30 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-6 active:bg-white/5 transition-colors group">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">
-              Inventory <span className="text-zinc-700 ml-1">0 gifts</span>
-            </span>
+      {/* --- 3. ИНВЕНТАРЬ (ИНФО-ПОЛОСА) --- */}
+      <div className="mx-6 px-4 py-4 flex justify-between items-center bg-white/5 rounded-2xl border border-white/5 mb-10">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center">
+            <LayoutGrid size={16} className="text-zinc-400" />
           </div>
-          <div className="flex items-center gap-1 text-zinc-600 group-active:text-white transition-colors">
-            <span className="text-[9px] font-black uppercase tracking-widest">{t('result')}</span>
-            <ChevronRight size={14} />
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">Inventory Cost</span>
+            <span className="text-xs font-bold text-zinc-500">0 gifts • 0.00 TON</span>
           </div>
-        </button>
+        </div>
+        <ChevronRight size={18} className="text-zinc-700" />
       </div>
 
-      {/* --- 4. REFERRAL BLOCK (Edge-to-Edge / Flattened) --- */}
-      <div className="px-6 mb-2">
-        <span className="text-[9px] font-black text-zinc-700 uppercase tracking-[0.3em]">Referral program</span>
+      {/* --- 4. РЕФЕРАЛЬНАЯ КАРТОЧКА (МАССИВНАЯ) --- */}
+      <div className="px-10 mb-4">
+        <span className="text-[11px] font-black text-zinc-700 uppercase tracking-[0.3em]">Ambassador Program</span>
       </div>
 
-      <div className="w-full relative overflow-hidden bg-white py-4 px-6 shadow-[0_10px_30px_rgba(0,0,0,0.5)] border-y border-white/20 mb-3">
-         <div className="absolute top-0 left-0 w-32 h-full bg-cyan-300/10 blur-[40px]" />
-         <div className="absolute bottom-0 right-0 w-32 h-full bg-purple-300/10 blur-[40px]" />
+      <div className="mx-4 relative overflow-hidden bg-white rounded-[36px] py-10 px-8 shadow-[0_30px_60px_rgba(0,0,0,0.5)] mb-6 border border-white/30">
+         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-500/5 to-purple-500/5" />
          
-         <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-               <div className="bg-zinc-900 p-2.5 rounded-2xl shadow-lg border border-white/10">
-                 <Award size={18} className="text-white" />
-               </div>
-               <div className="flex flex-col">
-                 <div className="flex items-center gap-2">
-                    <span className="text-[17px] font-black text-zinc-900">{t('level')} 1</span>
-                    <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 text-[8px] font-black rounded-md border border-blue-100">5%</span>
-                 </div>
-                 <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Active Friends: 1</span>
-               </div>
-            </div>
-
-            <div className="flex items-center gap-6 pr-2">
+         <div className="relative z-10 flex flex-col gap-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-5">
+                <div className="w-14 h-14 bg-zinc-900 rounded-[22px] flex items-center justify-center shadow-2xl border border-white/10 rotate-3">
+                  <Award size={28} className="text-white" />
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[22px] font-black text-zinc-900 tracking-tight">{t('level')} 1</span>
+                    <span className="px-2 py-0.5 bg-blue-600 text-white text-[9px] font-black rounded-full shadow-lg">5%</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Referral Rewards</span>
+                </div>
+              </div>
+              
               <div className="flex flex-col items-end">
-                <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest leading-none mb-1">Earned</span>
-                <span className="text-lg font-black text-zinc-900 leading-none tracking-tighter">0 <span className="text-[9px] text-zinc-400 font-bold ml-0.5">TON</span></span>
+                <span className="text-[9px] font-black text-zinc-400 uppercase mb-1">{t('earned')}</span>
+                <span className="text-2xl font-black text-zinc-900 tracking-tighter leading-none">0.00 <span className="text-xs">TON</span></span>
               </div>
             </div>
+
+            {/* Большая черная кнопка инвайта */}
+            <button className="w-full py-5 bg-black text-white font-black text-xs uppercase tracking-[0.3em] rounded-[24px] flex items-center justify-center gap-3 shadow-2xl active:scale-95 transition-all">
+              {t('invite')} 
+              <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs font-black">+</div>
+            </button>
          </div>
       </div>
 
-      {/* --- 5. INVITE BUTTON (Edge-to-Edge) --- */}
-      <button className="w-full py-5 bg-zinc-900 border-y border-white/10 text-white font-[900] text-xs uppercase tracking-[0.25em] active:bg-zinc-800 transition-all flex items-center justify-center gap-3 shadow-2xl">
-        {t('invite')} 
-        <div className="w-5 h-5 bg-white/10 rounded-full flex items-center justify-center text-[10px] border border-white/10 font-black">
-          +
-        </div>
-      </button>
-
-      {/* --- 6. SETTINGS MENU (Full Bottom Sheet / Language Logic) --- */}
+      {/* --- 5. ГЛАВНОЕ МЕНЮ (НАСТРОЙКИ + ЯЗЫКИ) --- */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-[100] flex flex-col justify-end">
-          {/* Backdrop Blur Overlay */}
+        <div className="fixed inset-0 z-[200] flex flex-col justify-end">
           <div 
-            className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fadeIn" 
+            className="absolute inset-0 bg-black/95 backdrop-blur-2xl animate-fadeIn" 
             onClick={() => setIsMenuOpen(false)} 
           />
           
-          {/* Sheet Body */}
-          <div className="relative w-full bg-[#0d0d0f] border-t border-white/10 px-8 pt-3 pb-12 animate-slideUp">
-            {/* Pull Bar */}
-            <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mt-2 mb-8" />
+          <div className="relative w-full bg-[#0d0d0f] border-t border-white/10 px-8 pt-4 pb-16 animate-slideUp rounded-t-[45px] shadow-[0_-20px_50px_rgba(0,0,0,0.9)]">
+            <div className="w-16 h-1.5 bg-white/10 rounded-full mx-auto mt-2 mb-10" />
             
-            {/* Header Menu */}
             <div className="flex justify-between items-center mb-10">
-               <div className="flex flex-col">
-                 <h2 className="text-3xl font-black text-white tracking-tighter uppercase">{t('menu')}</h2>
-                 <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Version 3.1.0-Flash</span>
+               <div>
+                 <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">{t('menu')}</h2>
+                 <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mt-1">System Configuration v3.4</p>
                </div>
                <button 
                  onClick={() => setIsMenuOpen(false)} 
-                 className="p-3 bg-white/5 rounded-2xl active:bg-white/10 transition-colors"
+                 className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center active:scale-90 transition-all border border-white/5"
                >
-                 <X size={24} className="text-zinc-400" />
+                 <X size={32} className="text-zinc-500" />
                </button>
             </div>
             
-            {/* Language Selection Grid */}
-            <div className="flex flex-col gap-4 mb-10">
-              <div className="flex items-center gap-2 text-zinc-500 mb-1">
-                <Globe size={14} />
-                <span className="text-[10px] font-black uppercase tracking-widest">{t('language')}</span>
+            {/* БЛОК: ВЫБОР ЯЗЫКА (6 СТРАН) */}
+            <div className="flex flex-col gap-5 mb-10">
+              <div className="flex items-center gap-2 text-zinc-500">
+                <Globe size={16} />
+                <span className="text-[11px] font-black uppercase tracking-widest">{t('language')}</span>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {languages.map(l => (
                   <button 
                     key={l.code} 
                     onClick={() => setLang(l.code)} 
-                    className={`flex flex-col items-center justify-center gap-1.5 py-4 rounded-[22px] border transition-all ${
+                    className={`flex flex-col items-center justify-center gap-2 py-4 rounded-3xl border transition-all ${
                       lang === l.code 
-                        ? 'bg-white text-black border-white shadow-[0_10px_20px_rgba(255,255,255,0.1)] scale-105' 
+                        ? 'bg-white text-black border-white shadow-[0_10px_30px_rgba(255,255,255,0.1)] scale-105' 
                         : 'bg-white/5 text-zinc-500 border-white/5 active:bg-white/10'
                     }`}
                   >
-                    <span className="text-xl">{l.flag}</span>
-                    <span className="text-[10px] font-black">{l.code}</span>
+                    <span className="text-2xl">{l.flag}</span>
+                    <span className="text-[10px] font-black uppercase">{l.code}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Toggles Logic */}
-            <div className="flex flex-col gap-5 mb-10">
+            {/* БЛОК: iOS ПЕРЕКЛЮЧАТЕЛИ */}
+            <div className="flex flex-col gap-4 mb-10">
                <div 
-                 className="flex justify-between items-center bg-white/5 p-5 rounded-3xl border border-white/5 cursor-pointer"
+                 className="flex justify-between items-center bg-zinc-900/50 p-6 rounded-[32px] border border-white/5"
                  onClick={() => setHapticEnabled(!hapticEnabled)}
                >
-                 <div className="flex items-center gap-3">
-                   <Smartphone size={18} className="text-zinc-400" />
-                   <span className="text-sm font-bold text-white tracking-tight">{t('tactile')}</span>
+                 <div className="flex items-center gap-4">
+                   <Smartphone size={22} className="text-zinc-500" />
+                   <span className="text-sm font-bold text-white uppercase tracking-tight">{t('tactile')}</span>
                  </div>
-                 <div className={`w-11 h-6 rounded-full relative transition-colors duration-300 ${hapticEnabled ? 'bg-[#00d2ff]' : 'bg-zinc-800'}`}>
-                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-md transition-all duration-300 ${hapticEnabled ? 'right-1' : 'right-6'}`} />
+                 <div className={`w-14 h-7 rounded-full relative transition-all duration-300 ${hapticEnabled ? 'bg-[#00d2ff]' : 'bg-zinc-800'}`}>
+                   <div className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-xl transition-all duration-300 ${hapticEnabled ? 'right-1' : 'right-8'}`} />
                  </div>
                </div>
 
-               <div 
-                 className="flex justify-between items-center bg-white/5 p-5 rounded-3xl border border-white/5 cursor-pointer"
-                 onClick={() => setAnimationsEnabled(!animationsEnabled)}
-               >
-                 <div className="flex items-center gap-3">
-                   <ShieldCheck size={18} className="text-zinc-400" />
-                   <span className="text-sm font-bold text-white tracking-tight">{t('animated')}</span>
+               <div className="flex justify-between items-center bg-zinc-900/50 p-6 rounded-[32px] border border-white/5" onClick={() => setAnimationsEnabled(!animationsEnabled)}>
+                 <div className="flex items-center gap-4">
+                   <Zap size={22} className="text-zinc-500" />
+                   <span className="text-sm font-bold text-white uppercase tracking-tight">{t('animated')}</span>
                  </div>
-                 <div className={`w-11 h-6 rounded-full relative transition-colors duration-300 ${animationsEnabled ? 'bg-[#00d2ff]' : 'bg-zinc-800'}`}>
-                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-md transition-all duration-300 ${animationsEnabled ? 'right-1' : 'right-6'}`} />
+                 <div className={`w-14 h-7 rounded-full relative transition-all ${animationsEnabled ? 'bg-[#00d2ff]' : 'bg-zinc-800'}`}>
+                   <div className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-xl transition-all ${animationsEnabled ? 'right-1' : 'right-8'}`} />
                  </div>
                </div>
             </div>
 
-            {/* Social & Support */}
+            {/* БЛОК: СОЦИАЛКИ */}
             <div className="grid grid-cols-2 gap-4 mb-10">
-               <button className="flex items-center justify-center gap-3 py-5 bg-zinc-900 border border-white/5 rounded-3xl active:scale-95 transition-all shadow-xl">
-                 <Twitter size={20} className="text-blue-400" />
+               <button className="flex items-center justify-center gap-3 py-5 bg-[#1DA1F2]/10 border border-[#1DA1F2]/20 rounded-[28px] active:scale-95 transition-all">
+                 <Twitter size={22} className="text-[#1DA1F2]" />
                  <span className="text-xs font-black text-white uppercase tracking-widest">Twitter</span>
                </button>
-               <button className="flex items-center justify-center gap-3 py-5 bg-zinc-900 border border-white/5 rounded-3xl active:scale-95 transition-all shadow-xl">
-                 <Send size={20} className="text-cyan-400" />
-                 <span className="text-xs font-black text-white uppercase tracking-widest">Support</span>
+               <button className="flex items-center justify-center gap-3 py-5 bg-[#0088cc]/10 border border-[#0088cc]/20 rounded-[28px] active:scale-95 transition-all">
+                 <Send size={22} className="text-[#0088cc]" />
+                 <span className="text-xs font-black text-white uppercase tracking-widest">Telegram</span>
                </button>
             </div>
 
-            {/* Footer Buttons */}
+            {/* ФУТЕР МЕНЮ */}
             <div className="flex gap-4">
-              <button className="flex-1 py-5 bg-white/5 text-zinc-500 font-bold rounded-3xl border border-white/5 uppercase tracking-widest text-[10px] active:bg-white/10 transition-colors">
-                {t('privacy')}
-              </button>
-              <button className="flex-[2] py-5 bg-white text-black font-[900] rounded-3xl uppercase tracking-[0.2em] text-[10px] shadow-lg shadow-white/5 active:scale-95 transition-all">
-                {t('contact')}
-              </button>
+              <button className="flex-1 py-5 bg-white/5 text-zinc-500 font-bold rounded-[28px] border border-white/5 uppercase tracking-widest text-[10px] active:bg-white/10">{t('privacy')}</button>
+              <button className="flex-[2] py-5 bg-white text-black font-black rounded-[28px] uppercase tracking-[0.25em] text-[10px] shadow-2xl active:scale-[0.98] transition-all">{t('contact')}</button>
             </div>
           </div>
         </div>
