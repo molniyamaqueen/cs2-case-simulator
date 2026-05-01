@@ -44,14 +44,14 @@ function App() {
       case ROUTES.PREVIEW: return <Preview />;
       case ROUTES.ARENA:   return <Arena />;
       case ROUTES.PROFILE: return <Profile />;
-      
+      case ROUTES.SEASON:  return <Season />;
+
       // Заглушки для остальных
       case ROUTES.BOOTY:   return <Placeholder name="Призы (Booty)" />;
       case ROUTES.RATING:  return <Placeholder name="Рейтинг" />;
       case ROUTES.ACADEMY: return <Placeholder name="Академия" />;
       case ROUTES.NEWS:    return <Placeholder name="Новости" />;
       case ROUTES.GUIDE:   return <Placeholder name="Гайды" />;
-      case ROUTES.SEASON:  return <Placeholder name="Сезон" />;
       default:
         return <Preview />;
     }
