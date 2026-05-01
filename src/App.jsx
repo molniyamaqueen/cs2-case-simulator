@@ -5,6 +5,7 @@ import Navigation from './components/Navigation';
 import Preview from './screens/Preview';
 import Arena from './screens/Arena';
 import Profile from './screens/Profile';
+import Season from './screens/Season'; // <--- ДОБАВЬ ВОТ ЭТУ СТРОКУ
 
 const ROUTES = {
   PREVIEW: 'preview',
