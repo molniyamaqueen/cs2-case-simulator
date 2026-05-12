@@ -54,3 +54,20 @@ html, body {
   to { transform: translateY(0); }
 }
 .animate-slideUp { animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+/* Анимация перелива (Shimmer) для иконок */
+@keyframes iridescent {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-iridescent {
+  background-size: 200% 200%;
+  animation: iridescent 4s ease infinite;
+}
+
+/* Кастомные тени */
+.shadow-neon-blue { box-shadow: 0 0 15px rgba(59, 130, 246, 0.3), inset 0 0 10px rgba(59, 130, 246, 0.1); }
+.shadow-neon-gold { box-shadow: 0 0 15px rgba(234, 179, 8, 0.3), inset 0 0 10px rgba(234, 179, 8, 0.1); }
+.shadow-neon-green { box-shadow: 0 0 15px rgba(34, 197, 94, 0.3), inset 0 0 10px rgba(34, 197, 94, 0.1); }
