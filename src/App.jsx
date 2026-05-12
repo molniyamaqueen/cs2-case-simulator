@@ -5,6 +5,11 @@ import Navigation from './components/Navigation';
 import Preview from './screens/Preview';
 import Arena from './screens/Arena';
 import Profile from './screens/Profile';
+import Season from './screens/Season';
+import Guide from './screens/Guide';
+import Rating from './screens/Rating';
+import Academy from './screens/Academy';
+import News from './screens/News';
 
 const ROUTES = {
   PREVIEW: 'preview',
@@ -45,15 +50,10 @@ function App() {
       case ROUTES.ARENA:   return <Arena />;
       case ROUTES.PROFILE: return <Profile />;
       case ROUTES.SEASON:  return <Season />;
-
-      // Заглушки для остальных
-      case ROUTES.BOOTY:   return <Placeholder name="Призы (Booty)" />;
-      case ROUTES.RATING:  return <Placeholder name="Рейтинг" />;
-      case ROUTES.ACADEMY: return <Placeholder name="Академия" />;
-      case ROUTES.NEWS:    return <Placeholder name="Новости" />;
-      case ROUTES.GUIDE:   return <Placeholder name="Гайды" />;
-      default:
-        return <Preview />;
+      case ROUTES.RATING:  return <Rating />;
+      case ROUTES.ACADEMY: return <Academy />;
+      case ROUTES.NEWS:    return <News />;
+      case ROUTES.GUIDE:   return <Guide />;
     }
   }, [activeTab]);
 
