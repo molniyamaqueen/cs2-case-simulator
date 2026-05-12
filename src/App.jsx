@@ -10,6 +10,7 @@ import Guide from './screens/Guide';
 import Rating from './screens/Rating';
 import Academy from './screens/Academy';
 import News from './screens/News';
+import Booty from './screens/Booty';
 
 const ROUTES = {
   PREVIEW: 'preview',
@@ -54,6 +55,8 @@ function App() {
       case ROUTES.ACADEMY: return <Academy />;
       case ROUTES.NEWS:    return <News />;
       case ROUTES.GUIDE:   return <Guide />;
+      case ROUTES.BOOTY:   return <Booty />;
+      default:             return <Preview />;
     }
   }, [activeTab]);
 
@@ -63,32 +66,16 @@ function App() {
     <div className="fixed inset-0 bg-[#0a0a0c] text-white font-sans flex flex-col overscroll-none select-none">
       
       {/* Главный скролл-контейнер */}
-<main className="scroll-container flex-1 w-full max-w-md mx-auto">
-  <div className="min-h-full px-4 pt-4 pb-32">
-    {renderCurrentScreen()}
-  </div>
-</main>
+      <main className="scroll-container flex-1 w-full max-w-md mx-auto">
+        <div className="min-h-full px-4 pt-4 pb-32">
+          {renderCurrentScreen()}
+        </div>
+      </main>
 
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
       
     </div>
   );
 }
-
-// Оптимизированный плейсхолдер
-const Placeholder = React.memo(({ name }) => (
-  <div className="flex flex-col items-center justify-center mt-32 animate-fadeIn px-4">
-    <div className="w-full max-w-sm px-8 py-10 bg-gradient-to-b from-white/[0.03] to-transparent border border-white/5 rounded-[2.5rem] flex flex-col items-center gap-4 relative overflow-hidden">
-      <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 blur-[50px] rounded-full" />
-      <div className="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center mb-2">
-        <div className="w-6 h-6 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
-      </div>
-      <div className="text-center">
-        <p className="text-zinc-500 font-bold uppercase tracking-[0.2em] text-[10px] mb-1">Раздел</p>
-        <h3 className="text-white font-black text-xl tracking-tight">{name}</h3>
-      </div>
-    </div>
-  </div>
-));
 
 export default App;
